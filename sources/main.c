@@ -26,7 +26,7 @@
 /*   // Let us apply sigmoid(X) */
 /*   printf("Before S(X) : "); */
 /*   print_double_arr(values, NEURON_COUNT); */
-/*   map(sigmoid, values, NEURON_COUNT); */
+/*   mapi(sigmoid, values, NEURON_COUNT); */
 /*   printf("After S(X) : "); */
 /*   print_double_arr(values, NEURON_COUNT); */
 /*   double sum = sum_double_arr(values, NEURON_COUNT); */
@@ -49,7 +49,7 @@ int main() {
     /* printf("Starting\n"); */
     /* printf("Neuron count : %d\nInput Count : %d\nWeight count : %d\n", */
     /*        NEURON_COUNT, INPUT_COUNT, WEIGHT_COUNT); */
-    srand(0xDEADBEEF);
+    srand(0x1);
     /* int inputs[4][2] = {{0, 0}, {1, 1}, {1, 0}, {0, 1}}; */
     /* int outputs[4] = {0, 0, 1, 1}; */
     /* double *weights = init_weights(); */
@@ -59,11 +59,18 @@ int main() {
     /* return 0; */
 
     t_neural_net *nn = create_nn(2, 1, 3, 1);
-    double input[2] = {1, 1};
-    print_nn(nn);
-    printf("---------------------\n");
-    forward_prop(nn, input);
-    printf("---------------------\n");
-    print_nn(nn);
+    double output[2] = {1};
+    double input[2] = {0, 1};
+    for (int i = 0; i < 1; i++) {
+        print_nn(nn);
+        printf("---------------------\n");
+        forward_prop(nn, input);
+        printf("---------------------\n");
+        print_nn(nn);
+        printf("-----\n");
+        back_prop(nn, output);
+        printf("-----\n");
+        print_nn(nn);
+    }
     return 0;
 }

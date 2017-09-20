@@ -18,4 +18,6 @@ void print_nn(const t_neural_net *nn);
 
 void forward_prop(t_neural_net *nn, double *input);
 
+void back_prop(t_neural_net *nn, double *expected);
+
 #endif
