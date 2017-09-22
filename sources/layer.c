@@ -47,7 +47,6 @@ t_layer *create_layer(const int prev_layer_size, const int neuron_count,
     return layer;
 }
 
-// This leaks gigabytes of memory
 void process_input(t_layer *layer, double *input) {
     (void)layer;
     (void)input;
