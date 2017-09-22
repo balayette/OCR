@@ -20,4 +20,6 @@ void forward_prop(t_neural_net *nn, double *input);
 
 void back_prop(t_neural_net *nn, double *expected);
 
+void free_nn(t_neural_net *nn);
+
 #endif

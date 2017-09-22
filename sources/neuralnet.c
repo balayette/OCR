@@ -24,6 +24,16 @@ t_neural_net *create_nn(const int input_count, const int hidden_layer_count,
     return nn;
 }
 
+
+void free_nn(t_neural_net *nn){
+    for(int i = 0; i < nn->hidden_layer_count + 2; i++){
+        printf("Freeing the %dth layer\n", i);
+        free_layer(nn->layers[i]);
+    }
+    free(nn->layers);
+    free(nn);
+}
+
 void print_nn(const t_neural_net *nn) {
     for (int i = 0; i <= nn->hidden_layer_count; i++) {
         printf("Neuron layer %d\n", i);
@@ -75,23 +85,24 @@ void back_prop(t_neural_net *nn, double *expected) {
             output_layer->weights[i][y] =
                 output_layer->weights[i][y] + d_weights[y];
         }
+        free(d_weights);
     }
 }
 
-void backprop_output(t_layer *layer, double *expected) {
-    if (!layer->output_layer) {
-        printf("Trying to backprop_output on a hidden layer\n");
-        exit(0);
-    }
-    printf("Starting backprop_output\n");
-    (void)expected;
-    for (int i = 0; i < layer->neuron_count; i++) {
-        printf("Backprop on neuron %d\n", i);
-        double target = expected[i];
-        double error_margin = target - layer->values[i];
-        printf("Target : %f | Value : %f | Margin : %f\n", target,
-               layer->values[i], error_margin);
-        double d_output_sum = sigmoid_deriv(layer->values[i]) * error_margin;
-        printf("dOutputSum : %f\n", d_output_sum);
-    }
-}
+/* void backprop_output(t_layer *layer, double *expected) { */
+/*     if (!layer->output_layer) { */
+/*         printf("Trying to backprop_output on a hidden layer\n"); */
+/*         exit(0); */
+/*     } */
+/*     printf("Starting backprop_output\n"); */
+/*     (void)expected; */
+/*     for (int i = 0; i < layer->neuron_count; i++) { */
+/*         printf("Backprop on neuron %d\n", i); */
+/*         double target = expected[i]; */
+/*         double error_margin = target - layer->values[i]; */
+/*         printf("Target : %f | Value : %f | Margin : %f\n", target, */
+/*                layer->values[i], error_margin); */
+/*         double d_output_sum = sigmoid_deriv(layer->values[i]) * error_margin; */
+/*         printf("dOutputSum : %f\n", d_output_sum); */
+/*     } */
+/* } */

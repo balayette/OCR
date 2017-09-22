@@ -72,5 +72,6 @@ int main() {
         printf("-----\n");
         print_nn(nn);
     }
+    free_nn(nn);
     return 0;
 }

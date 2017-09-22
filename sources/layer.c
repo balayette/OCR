@@ -4,6 +4,19 @@
 #include <stdio.h>
 #include <string.h>
 
+void free_layer(t_layer *layer){
+    if(layer->weights) {
+        for(int i = 0; i < layer->neuron_count; i++){
+            printf("Freeing weight %d\n", i);
+            free(layer->weights[i]);
+        }
+    }
+    free(layer->weights);
+    free(layer->hidden_values);
+    free(layer->values);
+    free(layer);
+}
+
 void init_weights(t_layer *layer) {
     double **arr = malloc(sizeof(double *) * layer->neuron_count);
     for (int i = 0; i < layer->neuron_count; i++) {
@@ -47,11 +60,11 @@ void process_input(t_layer *layer, double *input) {
     }
     printf("Sum of the inputs : ");
     print_double_arr(input_sum, layer->neuron_count);
-    double *sigmoid_sum = malloc(layer->neuron_count * sizeof(double));
-    memcpy(sigmoid_sum, input_sum, layer->neuron_count * sizeof(double));
-    mapi(sigmoid, sigmoid_sum, layer->neuron_count);
+    double *sigmoid_sum = map(sigmoid, input_sum, layer->neuron_count);
     printf("S(sum) : ");
     print_double_arr(sigmoid_sum, layer->neuron_count);
+    free(layer->values);
+    free(layer->hidden_values);
     layer->values = sigmoid_sum;
     layer->hidden_values = input_sum;
 }
