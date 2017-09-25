@@ -3,6 +3,14 @@
 
 #include "layer.h"
 
+
+
+/*
+
+A neural network is made up of (hidden_layer_count + 2) layers :
+  hidden_layer_count hidden layers + 1 input layer + 1 output layer.
+
+*/
 typedef struct s_neural_net {
     int input_count;
     int hidden_layer_count;

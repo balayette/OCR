@@ -1,0 +1,55 @@
+
+sources/utils.c,754
+void mapi(double (*f)(double), double *list, const int count) {mapi8,125
+double *map(double (*f)(double), double *input, const int count){map13,258
+double sum_double_arr(double *arr, const int count) {sum_double_arr21,474
+void print_double_arr(double *arr, const int count) {print_double_arr29,634
+double sigmoid(double a) { return (1 / (1 + exp(-a))); }sigmoid44,978
+double sigmoid_deriv(double a) { return a * (1 - a); }sigmoid_deriv46,1036
+bool cmp_double_array(const double *a1, const int size1, const double *a2, const int size2){cmp_double_array48,1092
+double *div_scalar_by_array(double scalar, double *list, int count){div_scalar_by_array57,1342
+double *multiply_arrays(double *a1, double *a2, int count){multiply_arrays65,1557
+
+sources/layer.c,273
+void free_layer(t_layer *layer){free_layer7,121
+void init_weights(t_layer *layer) {init_weights20,435
+t_layer *create_layer(const int prev_layer_size, const int neuron_count,create_layer34,915
+void process_input(t_layer *layer, double *input) {process_input50,1516
+
+sources/neuralnet.c,342
+t_neural_net *create_nn(const int input_count, const int hidden_layer_count,create_nn7,134
+void free_nn(t_neural_net *nn){free_nn28,971
+void print_nn(const t_neural_net *nn) {print_nn37,1187
+void forward_prop(t_neural_net *nn, double *input) {forward_prop51,1755
+void back_prop(t_neural_net *nn, double *expected) {back_prop60,2056
+
+sources/main.c,26
+int main() {main48,1782
+
+Makefile,102
+FLAGS= -Wall -Wextra -pedantic -std=c99 -Werror -g -lmFLAGS1,0
+SRC=$(wildcard sources/*.c)SRC3,56
+
+headers/neuralnet.h,333
+#define NEURAL_NET_HNEURAL_NET_H2,21
+typedef struct s_neural_net {s_neural_net6,63
+    int input_count;input_count7,93
+    int hidden_layer_count;hidden_layer_count8,114
+    int neuron_count;neuron_count9,142
+    int output_count;output_count10,164
+    t_layer **layers;layers11,186
+} t_neural_net;t_neural_net12,208
+
+headers/layer.h,343
+#define LAYER_HLAYER_H2,16
+typedef struct s_layer {s_layer7,75
+    int neuron_count;neuron_count8,100
+    int prev_layer_size;prev_layer_size9,122
+    bool output_layer;output_layer10,147
+    double **weights;weights11,170
+    double *hidden_values;hidden_values12,192
+    double *values;values13,219
+} t_layer;t_layer14,239
+
+headers/utils.h,29
+#define UTILS_HUTILS_H2,16

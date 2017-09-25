@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <string.h>
 
-void free_layer(t_layer *layer){
-    if(layer->weights) {
-        for(int i = 0; i < layer->neuron_count; i++){
+void free_layer(t_layer *layer) {
+    if (layer->weights) {
+        for (int i = 0; i < layer->neuron_count; i++) {
             printf("Freeing weight %d\n", i);
             free(layer->weights[i]);
         }
@@ -22,8 +22,6 @@ void init_weights(t_layer *layer) {
     for (int i = 0; i < layer->neuron_count; i++) {
         arr[i] = malloc(sizeof(double) * layer->neuron_count *
                         layer->prev_layer_size);
-    }
-    for (int i = 0; i < layer->neuron_count; i++) {
         for (int y = 0; y < layer->prev_layer_size; y++) {
             arr[i][y] = rand() / (double)RAND_MAX;
         }
@@ -48,8 +46,6 @@ t_layer *create_layer(const int prev_layer_size, const int neuron_count,
 }
 
 void process_input(t_layer *layer, double *input) {
-    (void)layer;
-    (void)input;
     double *input_sum = calloc(layer->neuron_count, sizeof(double));
     printf("\nProcessing the input in the layer\n");
     for (int i = 0; i < layer->neuron_count; i++) {
@@ -58,7 +54,7 @@ void process_input(t_layer *layer, double *input) {
         }
     }
     printf("Sum of the inputs : ");
-    print_double_arr(input_sum, layer->neuron_count);
+    print_double_arr(input_sum,layer->neuron_count);
     double *sigmoid_sum = map(sigmoid, input_sum, layer->neuron_count);
     printf("S(sum) : ");
     print_double_arr(sigmoid_sum, layer->neuron_count);
