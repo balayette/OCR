@@ -7,7 +7,7 @@
 void free_layer(t_layer *layer) {
     if (layer->weights) {
         for (int i = 0; i < layer->neuron_count; i++) {
-            printf("Freeing weight %d\n", i);
+            /* printf("Freeing weight %d\n", i); */
             free(layer->weights[i]);
         }
     }
@@ -38,6 +38,7 @@ t_layer *create_layer(const int prev_layer_size, const int neuron_count,
     layer->output_layer = output_layer;
     layer->values = calloc(neuron_count, sizeof(double));
     layer->hidden_values = calloc(neuron_count, sizeof(double));
+    layer->deltas = calloc(neuron_count, sizeof(double));
     if (random_weights)
         init_weights(layer);
     else

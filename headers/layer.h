@@ -38,6 +38,7 @@ typedef struct s_layer {
     double **weights;
     double *hidden_values;
     double *values;
+    double *deltas;
 } t_layer;
 
 // Random weights will be used if random_weigths is set to true.
