@@ -14,6 +14,7 @@ void free_layer(t_layer *layer) {
     free(layer->weights);
     free(layer->hidden_values);
     free(layer->values);
+    free(layer->deltas);
     free(layer);
 }
 
