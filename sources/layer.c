@@ -32,7 +32,7 @@ void init_weights(t_layer *layer) {
 
 t_layer *create_layer(const int prev_layer_size, const int neuron_count,
                       const bool random_weights, double **weights,
-                      const bool output_layer) {
+                      const bool output_layer, double bias) {
     t_layer *layer = malloc(sizeof(t_layer));
     layer->prev_layer_size = prev_layer_size;
     layer->neuron_count = neuron_count;
@@ -40,6 +40,10 @@ t_layer *create_layer(const int prev_layer_size, const int neuron_count,
     layer->values = calloc(neuron_count, sizeof(double));
     layer->hidden_values = calloc(neuron_count, sizeof(double));
     layer->deltas = calloc(neuron_count, sizeof(double));
+    layer->bias_weights = calloc(neuron_count, sizeof(double));
+    layer->bias = bias;
+    for(int i = 0; i < neuron_count; i++)
+        layer->bias_weights[i] = 1.0;
     if (random_weights)
         init_weights(layer);
     else
@@ -49,17 +53,18 @@ t_layer *create_layer(const int prev_layer_size, const int neuron_count,
 
 void process_input(t_layer *layer, double *input) {
     double *input_sum = calloc(layer->neuron_count, sizeof(double));
-    printf("\nProcessing the input in the layer\n");
+    /* printf("\nProcessing the input in the layer\n"); */
     for (int i = 0; i < layer->neuron_count; i++) {
         for (int y = 0; y < layer->prev_layer_size; y++) {
+            /* input_sum[i] += input[y] * layer->weights[i][y] + layer->bias * layer->bias_weights[i]; */
             input_sum[i] += input[y] * layer->weights[i][y];
         }
     }
-    printf("Sum of the inputs : ");
-    print_double_arr(input_sum,layer->neuron_count);
+    /* printf("Sum of the inputs : "); */
+    /* print_double_arr(input_sum,layer->neuron_count); */
     double *sigmoid_sum = map(sigmoid, input_sum, layer->neuron_count);
-    printf("S(sum) : ");
-    print_double_arr(sigmoid_sum, layer->neuron_count);
+    /* printf("S(sum) : "); */
+    /* print_double_arr(sigmoid_sum, layer->neuron_count); */
     free(layer->values);
     free(layer->hidden_values);
     layer->values = sigmoid_sum;

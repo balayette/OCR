@@ -39,13 +39,15 @@ typedef struct s_layer {
     double *hidden_values;
     double *values;
     double *deltas;
+    double *bias_weights;
+    double bias;
 } t_layer;
 
 // Random weights will be used if random_weigths is set to true.
 // Otherwise, **weights will be used.
 t_layer *create_layer(const int prev_layer_size, const int neuron_count,
                       const bool random_weights, double **weights,
-                      const bool output_layer);
+                      const bool output_layer, double bias);
 
 void process_input(t_layer *layer, double *input);
 

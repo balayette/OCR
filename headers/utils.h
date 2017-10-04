@@ -21,4 +21,7 @@ bool cmp_double_array(const double *a1, const int size1, const double *a2, const
 double *div_scalar_by_array(double scalar, double *list, int count);
 
 double *multiply_arrays(double *a1, double *a2, int count);
+
+double threshold(double value);
+
 #endif

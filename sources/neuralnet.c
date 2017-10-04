@@ -11,15 +11,16 @@ t_neural_net *create_nn(const int input_count, const int hidden_layer_count,
     nn->hidden_layer_count = hidden_layer_count;
     nn->neuron_count = neuron_count;
     nn->output_count = output_count;
+    nn->bias = 1;
     t_layer **layers = malloc(sizeof(t_layer *) * (hidden_layer_count + 2));
-    layers[0] = create_layer(0, input_count, false, NULL, false);
+    layers[0] = create_layer(0, input_count, false, NULL, false, nn->bias);
     int prev = input_count;
     for (int i = 0; i < hidden_layer_count; i++) {
-        layers[i + 1] = create_layer(prev, neuron_count, true, NULL, false);
+        layers[i + 1] = create_layer(prev, neuron_count, true, NULL, false, nn->bias);
         prev = neuron_count;
     }
     layers[hidden_layer_count + 1] =
-        create_layer(prev, output_count, true, NULL, true);
+        create_layer(prev, output_count, true, NULL, true, nn->bias);
     nn->layers = layers;
     return nn;
 }
@@ -49,7 +50,7 @@ void print_nn(const t_neural_net *nn) {
 
 void forward_prop(t_neural_net *nn, double *input) {
     double *prev_output = input;
-    printf("Starting forward propagation\n");
+    /* printf("Starting forward propagation\n"); */
     for (int i = 0; i <= nn->hidden_layer_count; i++) {
         process_input(nn->layers[i + 1], prev_output);
         prev_output = nn->layers[i + 1]->values;
@@ -59,121 +60,64 @@ void forward_prop(t_neural_net *nn, double *input) {
 double error(double *expected, double *result) { return *expected - *result; }
 
 void back_prop(t_neural_net *nn, double *expected) {
-    // TODO : Back prop with multiple outputs, see
-    // https://cs.stackexchange.com/questions/35266/ann-backpropagation-with-multiple-output-neurons
-    (void)nn;
-    (void)expected;
-    printf("Starting back propagation\n");
-    /* backprop_output(nn->layers[nn->hidden_layer_count + 1], expected); */
+    // We assume that the neural network only has 1 hidden layer
+    // (For now)
     t_layer *output_layer = nn->layers[nn->hidden_layer_count + 1];
-    /* double d_output_sum; */
-    /* for (int i = 0; i < output_layer->neuron_count; i++) { */
-    /*     printf("Backprop on neuron %d\n", i); */
-    /*     double target = expected[i]; */
-    /*     double error_margin = target - output_layer->values[i]; */
-    /*     printf("Target : %f | Value : %f | Margin : %f\n", target, */
-    /*            output_layer->values[i], error_margin); */
-    /*     d_output_sum = sigmoid_deriv(output_layer->values[i]) * error_margin;
-     */
-    /*     printf("dOutputSum : %f\n", d_output_sum); */
-    /*     printf("Previous hidden layer values : "); */
-    /*     t_layer *prev_layer = nn->layers[nn->hidden_layer_count]; */
-    /*     print_double_arr(prev_layer->values, nn->neuron_count); */
-    /*     double *d_weights = div_scalar_by_array( */
-    /*         d_output_sum, prev_layer->values, nn->neuron_count); */
-    /*     printf("dWeights : "); */
-    /*     print_double_arr(d_weights, nn->neuron_count); */
-    /*     for (int y = 0; y < nn->neuron_count; y++) { */
-    /*         output_layer->weights[i][y] = */
-    /*             output_layer->weights[i][y] + d_weights[y]; */
-    /*     } */
-    /*     free(d_weights); */
-    /* } */
+    for (int i = 0; i < nn->output_count; i++) {
+        // We are iterating over the nodes of the output layer
 
-    /* double *deltas = malloc(output_layer->neuron_count * sizeof(double)); */
-    /* for (int i = 0; i < output_layer->neuron_count; i++) { */
-    /*     double error = expected[i] - output_layer->values[i]; */
-    /*     deltas[i] = */
-    /*         output_layer->values[i] * (1 - output_layer->values[i]) * error;
-     */
-    /*     double s = 0; */
-    /*     for(int y = 0; y < output_layer->prev_layer_size; y++){ */
-    /*         s += deltas[i] * output_layer->weights[i][y]; */
-    /*     } */
-    /*     deltas[i] = nn->layers[nn->hidden_layer_count]->values[i] * s; */
-    /* } */
-    /* for(int x = 0; x < nn->hidden_layer_count; x++){ */
-    /*     t_layer *next_layer = nn->layers[x + 1]; */
-
-    for (int i = 0; i < output_layer->neuron_count; i++) {
         double err = error(&expected[i], &output_layer->values[i]);
-        printf("Error on output layer[%d]: %f\n", i, err);
+
+        // The delta of a node is equal to the derivative of the activation
+        // function of the output of the node * the error of the node
+
         output_layer->deltas[i] = sigmoid_deriv(output_layer->values[i]) * err;
     }
 
-    for (int i = 0; i < nn->hidden_layer_count + 1; i++) {
-        t_layer *l = nn->layers[i];
-        if (l->output_layer) {
-            printf("Got an output layer\n");
-            exit(1);
+    t_layer *hidden_layer = nn->layers[1];
+    for (int i = 0; i < hidden_layer->neuron_count; i++) {
+        // We are iterating over the nodes of the hidden layers
+
+        // The delta of a hidden node is equal to the derivative of the
+        // activation function of the output of the node * the sum of
+        // delta * weight from the neuron to the output neuron, for all
+        // neurons of the output layer
+
+        double deriv = sigmoid_deriv(hidden_layer->values[i]);
+        double sum = 0;
+        for (int k = 0; k < output_layer->neuron_count; k++) {
+            // weights[k][i] is the weigth from the hidden neuron i to the
+            // output neuron k
+            sum += output_layer->deltas[k] * output_layer->weights[k][i];
         }
-        for (int y = 0; y < l->neuron_count; y++) {
-            double s = 0;
-            t_layer *next_layer = nn->layers[i + 1];
-            for (int x = 0; x < next_layer->neuron_count; x++) {
-                s += next_layer->deltas[x] * next_layer->weights[x][y];
-            }
-            l->deltas[y] = l->values[y] * (1 - l->values[y]) * s;
-        }
+        hidden_layer->deltas[i] = deriv * sum;
     }
 
-    for (int i = 0; i < nn->hidden_layer_count + 1; i++) {
-        printf("On layer %d\n", i);
-        t_layer *next = nn->layers[i + 1];
-        t_layer *curr = nn->layers[i];
-        if (next->output_layer) {
-            for (int y = 0; y < next->neuron_count; y++) {
-                for(int x = 0; x < curr->neuron_count; x++){
-                    next->weights[y][x] += next->deltas[y] * next->values[y];
-                }
-            }
+    // Finally, we can update the weights
+    // New weights are computed as follows :
+    // - Weights that link to an output neuron = weight + delta * output of the
+    // hidden neuron on the other side of the link.
+    // - Weights that link to a hidden neuron = weight + delta * input of the
+    // neuron
+
+    for (int neuron = 0; neuron < output_layer->neuron_count; neuron++) {
+        // iterating over the weights of the output layer
+        for (int prev_n = 0; prev_n < hidden_layer->neuron_count; prev_n++) {
+            output_layer->weights[neuron][prev_n] -=
+                output_layer->deltas[neuron] * nn->bias * hidden_layer->values[prev_n];
         }
-        else{
-            for (int y = 0; y < next->neuron_count; y++) {
-                for(int x = 0; x < curr->neuron_count; x++){
-                    next->weights[y][x] += next->deltas[y] * curr->values[y];
-                }
-            }
-        }
+        output_layer->bias_weights[neuron] -= output_layer->deltas[neuron];
     }
 
-    /* for(int i = 0; i < next_layer->neuron_count; i++){ */
-    /*     for(int y = 0; y < next_layer->prev_layer_size; y++){ */
-    /*         if(next_layer->output_layer){ */
-    /*             next_layer[] */
-    /*         } */
-    /*         else{ */
+    t_layer *input_layer = nn->layers[0];
 
-    /*         } */
-    /*     } */
-    /* } */
+    for (int neuron = 0; neuron < hidden_layer->neuron_count; neuron++) {
+        // iterating over the weights of the output layer
+        for (int prev_n = 0; prev_n < input_layer->neuron_count; prev_n++) {
+            hidden_layer->weights[neuron][prev_n] -=
+                hidden_layer->deltas[neuron] *
+                hidden_layer->hidden_values[neuron];
+        }
+        output_layer->bias_weights[neuron] -= hidden_layer->deltas[neuron];
+    }
 }
-
-/* void backprop_output(t_layer *layer, double *expected) { */
-/*     if (!layer->output_layer) { */
-/*         printf("Trying to backprop_output on a hidden layer\n"); */
-/*         exit(0); */
-/*     } */
-/*     printf("Starting backprop_output\n"); */
-/*     (void)expected; */
-/*     for (int i = 0; i < layer->neuron_count; i++) { */
-/*         printf("Backprop on neuron %d\n", i); */
-/*         double target = expected[i]; */
-/*         double error_margin = target - layer->values[i]; */
-/*         printf("Target : %f | Value : %f | Margin : %f\n", target, */
-/*                layer->values[i], error_margin); */
-/*         double d_output_sum = sigmoid_deriv(layer->values[i]) * error_margin;
- */
-/*         printf("dOutputSum : %f\n", d_output_sum); */
-/*     } */
-/* } */

@@ -68,3 +68,4 @@ double *multiply_arrays(double *a1, double *a2, int count){
         ret[i] = a1[i] * a2[i];
     return ret;
 }
+double threshold(double value) { return 0.5 > value ? 0 : 1; }

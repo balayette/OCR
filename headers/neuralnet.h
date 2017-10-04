@@ -17,6 +17,7 @@ typedef struct s_neural_net {
     int neuron_count;
     int output_count;
     t_layer **layers;
+    double bias;
 } t_neural_net;
 
 t_neural_net *create_nn(const int input_count, const int hidden_layer_count,
