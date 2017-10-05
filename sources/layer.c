@@ -56,8 +56,7 @@ void process_input(t_layer *layer, double *input) {
     /* printf("\nProcessing the input in the layer\n"); */
     for (int i = 0; i < layer->neuron_count; i++) {
         for (int y = 0; y < layer->prev_layer_size; y++) {
-            /* input_sum[i] += input[y] * layer->weights[i][y] + layer->bias * layer->bias_weights[i]; */
-            input_sum[i] += input[y] * layer->weights[i][y];
+            input_sum[i] += input[y] * layer->weights[i][y] + layer->bias * layer->bias_weights[i];
         }
     }
     /* printf("Sum of the inputs : "); */
