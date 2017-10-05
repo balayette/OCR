@@ -59,7 +59,7 @@ void forward_prop(t_neural_net *nn, double *input) {
 
 double error(double *expected, double *result) { return *expected - *result; }
 
-void back_prop(t_neural_net *nn, double *expected) {
+void back_prop(t_neural_net *nn, double *expected, double *input) {
     // We assume that the neural network only has 1 hidden layer
     // (For now)
     t_layer *output_layer = nn->layers[nn->hidden_layer_count + 1];
@@ -103,21 +103,21 @@ void back_prop(t_neural_net *nn, double *expected) {
     for (int neuron = 0; neuron < output_layer->neuron_count; neuron++) {
         // iterating over the weights of the output layer
         for (int prev_n = 0; prev_n < hidden_layer->neuron_count; prev_n++) {
-            output_layer->weights[neuron][prev_n] -=
-                output_layer->deltas[neuron] * nn->bias * hidden_layer->values[prev_n];
+            output_layer->weights[neuron][prev_n] +=
+                output_layer->deltas[neuron] * hidden_layer->values[prev_n];
         }
-        output_layer->bias_weights[neuron] -= output_layer->deltas[neuron];
+        output_layer->bias_weights[neuron] += output_layer->deltas[neuron];
     }
 
     t_layer *input_layer = nn->layers[0];
 
     for (int neuron = 0; neuron < hidden_layer->neuron_count; neuron++) {
-        // iterating over the weights of the output layer
+        // iterating over the weights of the hidden layer
         for (int prev_n = 0; prev_n < input_layer->neuron_count; prev_n++) {
-            hidden_layer->weights[neuron][prev_n] -=
+            hidden_layer->weights[neuron][prev_n] +=
                 hidden_layer->deltas[neuron] *
-                hidden_layer->hidden_values[neuron];
+                input[prev_n];
         }
-        output_layer->bias_weights[neuron] -= hidden_layer->deltas[neuron];
+        output_layer->bias_weights[neuron] += hidden_layer->deltas[neuron];
     }
 }

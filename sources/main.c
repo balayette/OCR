@@ -22,7 +22,7 @@ int main(int argc, const char *argv[]) {
         for (int i = 1; i <= rep; i++) {
             int k = rand() % 4;
             forward_prop(nn, input[k]);
-            back_prop(nn, output[k]);
+            back_prop(nn, output[k], input[k]);
             printf("Rep : %d / %d | INPUT : ", i, rep);
             print_double_arr(input[k], nn->input_count);
             printf("OUTPUT : ");

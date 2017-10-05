@@ -27,7 +27,7 @@ void print_nn(const t_neural_net *nn);
 
 void forward_prop(t_neural_net *nn, double *input);
 
-void back_prop(t_neural_net *nn, double *expected);
+void back_prop(t_neural_net *nn, double *expected, double *input);
 
 void free_nn(t_neural_net *nn);
 
