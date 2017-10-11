@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "../headers/utils.h"
+#include "../../headers/misc/utils.h"
 
 // In place map
 void mapi(double (*f)(double), double *list, const int count) {

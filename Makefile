@@ -1,9 +1,21 @@
-FLAGS= -Wall -Wextra -pedantic -std=c99 -Werror -g -lm
+CC=clang
+CFLAGS= -Wall -Wextra -pedantic -std=c99 -Werror -g
+CPPFLAGS= `pkg-config --cflags sdl` -MMD
+LDLIBS= `pkg-config --libs sdl` -lSDL_image
+LDFLAGS= -lm
 
-SRC=$(wildcard sources/*.c)
+NNSRC=$(wildcard sources/neuralnet/*.c)
+IMGSRC=$(wildcard sources/imgprocessing/*.c)
+MISCSRC=$(wildcard sources/misc/*.c)
 
-main: $(SRC)
-	clang -o $@.out $^ $(FLAGS)
+all: neuralnet imgprocessing
+
+neuralnet: $(NNSRC) $(MISCSRC)
+	clang -o $@.out $^ $(CFLAGS) $(LDFLAGS)
+
+imgprocessing: $(IMGSRC) $(MISCSRC)
+	clang -o $@.out $^ $(CFLAGS) $(CPPFLAGS) $(LDLIBS) $(LDFLAGS)
 
 clean:
-	rm ./main.out
+	rm -f ./*.out
+	rm -f ./*.d

@@ -1,5 +1,5 @@
-#include "../headers/layer.h"
-#include "../headers/utils.h"
+#include "../../headers/neuralnet/layer.h"
+#include "../../headers/misc/utils.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>

@@ -1,6 +1,6 @@
-#include "../headers/neuralnet.h"
-#include "../headers/layer.h"
-#include "../headers/utils.h"
+#include "../../headers/neuralnet/neuralnet.h"
+#include "../../headers/neuralnet/layer.h"
+#include "../../headers/misc/utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 
