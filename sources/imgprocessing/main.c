@@ -48,9 +48,14 @@ SDL_Surface* display_image(SDL_Surface *img) {
 }
 
 int main(void){
-    SDL_Surface *img = load_image("res/lena.bmp");
+    SDL_Surface *img = load_image("res/scan.jpg");
     display_image(img);
     gray_level(img);
     display_image(img);
+    int t = otsu(img);
+    printf("Optimal threshold : %d\n", t);
+    binarize(img, t);
+    display_image(img);
+    free(img);
     return 0;
 }

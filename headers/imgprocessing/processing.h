@@ -5,4 +5,10 @@
 
 void gray_level(SDL_Surface *img);
 
+void inverse(SDL_Surface *img);
+
+void binarize(SDL_Surface *img, int threshold);
+
+int otsu(SDL_Surface *img);
+
 #endif
