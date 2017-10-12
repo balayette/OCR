@@ -47,6 +47,59 @@ void binarize(SDL_Surface *img, int threshold){
     }
 }
 
+void contrast(SDL_Surface *img, int value){
+    double factor = (259.0 * (value + 255.0)) / (255.0 * (259.0 - value));
+    Uint8 r, g, b;
+    for (int x = 0; x < img->h; x++) {
+        for (int y = 0; y < img->w; y++) {
+            Uint32 pix = getpixel(img, y, x);
+            SDL_GetRGB(pix, img->format, &r, &g, &b);
+            r = factor * (r - 128) + 128;
+            g = factor * (g - 128) + 128;
+            b = factor * (b - 128) + 128;
+            Uint32 npix = SDL_MapRGB(img->format, r, g, b);
+            putpixel(img, y, x, npix);
+        }
+    }
+}
+
+void blur(SDL_Surface *img, int radius){
+    int avgr = 0;
+    int avgg = 0;
+    int avgb = 0;
+    int count = 0;
+    Uint8 r, g, b;
+    for(int i = 0; i < img->w; i++){
+        for(int j = 0; j < img->h; j++){
+            for(int ii = -radius; ii <= radius; ii++){
+                for(int ij = -radius; ij <= radius; ij++){
+                    int newi = ii + i;
+                    int newj = ij + j;
+                    if(newi < 0 || newi > img->w || newj < 0 || newj > img->h)
+                        continue;
+                    if(newj == j || newi == i)
+                        continue;
+                    Uint32 pix = getpixel(img, newi, newj);
+                    SDL_GetRGB(pix, img->format, &r, &g, &b);
+                    avgr += r;
+                    avgb += b;
+                    avgg += g;
+                    count++;
+                }
+            }
+            avgr /= count;
+            avgg /= count;
+            avgb /= count;
+            Uint32 newpix = SDL_MapRGB(img->format, avgr, avgg, avgb);
+            putpixel(img, i, j, newpix);
+            avgb = 0;
+            avgg = 0;
+            avgr = 0;
+            count = 0;
+        }
+    }
+}
+
 
 int otsu(SDL_Surface *img){
     int hist[256] = {0};

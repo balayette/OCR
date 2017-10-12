@@ -47,14 +47,17 @@ SDL_Surface* display_image(SDL_Surface *img) {
     return screen;
 }
 
-int main(void){
-    SDL_Surface *img = load_image("res/scan.jpg");
+int main(int argv, char *argc[]){
+    (void)argv;
+    SDL_Surface *img = load_image(argc[1]);
     display_image(img);
     gray_level(img);
     display_image(img);
     int t = otsu(img);
     printf("Optimal threshold : %d\n", t);
     binarize(img, t);
+    display_image(img);
+    blur(img, 1);
     display_image(img);
     free(img);
     return 0;

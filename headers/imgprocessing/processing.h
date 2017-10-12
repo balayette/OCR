@@ -11,4 +11,8 @@ void binarize(SDL_Surface *img, int threshold);
 
 int otsu(SDL_Surface *img);
 
+void contrast(SDL_Surface *img, int value);
+
+void blur(SDL_Surface *img, int radius);
+
 #endif
