@@ -47,18 +47,17 @@ SDL_Surface* display_image(SDL_Surface *img) {
     return screen;
 }
 
-int main(int argv, char *argc[]){
-    (void)argv;
-    SDL_Surface *img = load_image(argc[1]);
+int main(int argc, char *argv[]){
+    (void)argc;
+    printf("Loading an image from %s\n", argv[1]);
+    SDL_Surface *img = load_image(argv[1]);
     display_image(img);
     gray_level(img);
-    display_image(img);
     int t = otsu(img);
-    printf("Optimal threshold : %d\n", t);
     binarize(img, t);
-    display_image(img);
-    blur(img, 1);
+    divide_and_conquer(img);
     display_image(img);
     free(img);
+    SDL_Quit();
     return 0;
 }
