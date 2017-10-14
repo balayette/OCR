@@ -1,3 +1,5 @@
+#include "../../headers/imgprocessing/boxes.h"
+#include "../../headers/imgprocessing/drawing.h"
 #include "../../headers/imgprocessing/pixop.h"
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
@@ -144,74 +146,63 @@ int otsu(SDL_Surface *img) {
     return optimal_thresh;
 }
 
-typedef struct s_box {
-    int x;
-    int y;
-    int height;
-    int width;
-    bool has_black;
-} t_box;
-
-bool check_black_percent(SDL_Surface *img, t_box *box) {
-    /*
-      At the moment, the box isn't really centered, and it doesn't check the
-      whole box in all cases.
-      This function should take a percentage as input. Will be done later
-     */
-    int startx = box->x - (box->width / 2);
-    int starty = box->y - (box->height / 2);
-    int endx = box->x + (box->width / 2);
-    int endy = box->y + (box->height / 2);
-    (void)img;
-    Uint8 r, g, b;
-    int count = 0;
-    for (int y = starty; y < endy; y++) {
-        for (int x = startx; x < endx; x++) {
-            Uint32 pix = getpixel(img, x, y);
-            SDL_GetRGB(pix, img->format, &r, &g, &b);
-            if (r == 0)
-                count++;
-        }
-    }
-    return count != 0;
-}
-
 #define CUTS 200
 
-void draw_line(SDL_Surface *img, Uint32 color, int xstart, int xend, int y){
-    for(int i = xstart; i < xend; i++)
-        putpixel(img, i, y, color);
+// Init_DivideAndConquer
+t_boxes *init_dac(SDL_Surface *img, int *size, int *hbox_count,
+                  int *vbox_count) {
+    // printf("Image : %d x %d\n", img->h, img->w);
+    int hcuts = img->h / CUTS;
+    int wcuts = img->w / CUTS;
+    *size = hcuts < wcuts ? hcuts : wcuts;
+    *size = *size % 2 == 1 ? *size : *size + 1;
+    *hbox_count = img->w / *size;
+    *vbox_count = img->h / *size;
+    t_boxes *boxes = new_boxes(*vbox_count, *hbox_count);
+    return boxes;
+}
+
+/* void generate_boxes(SDL_Surface *img, t_boxes *boxes){ */
+
+/* } */
+// NextBot_with_BlackBottomNeigh
+/* void nb_with_bbn(SDL_Surface *img, t_boxes ***boxes, int i, int j) {} */
+
+int get_nth_height(int *ln, int lnlen, int n){
+    int k = -1;
+    for(int i = 0; i < lnlen; i++)
+    {
+        if(ln[i] == 0)
+            continue;
+        k++;
+        if(k == n)
+            return ln[i];
+    }
+    return 0;
 }
 
 void divide_and_conquer(SDL_Surface *img) {
-    // We want boxes of 1% of the pixels
-    printf("Image : %d x %d\n", img->h, img->w);
-    int hcuts = img->h / CUTS;
-    int wcuts = img->w / CUTS;
-    int size = hcuts < wcuts ? hcuts : wcuts;
-    size = size % 2 == 1 ? size : size + 1;
-    int hbox_count = img->w / size;
-    int vbox_count = img->h / size;
-    int box_count = vbox_count * hbox_count;
-    t_box *boxes[vbox_count][hbox_count];
-    printf("t_box *boxes[%d][%d]\n", vbox_count, hbox_count);
-    printf("Going to create %d boxes of %dx%d pixels\n", box_count, size, size);
+    int size, hbox_count, vbox_count;
+    t_boxes *boxes = init_dac(img, &size, &hbox_count, &vbox_count);
     int i = 0;
     int j = 0;
     int created_count = 0;
-    for (int y = size / 2; y + size / 2 < img->h; y += size) {
-        for (int x = size / 2; x + size / 2 < img->w; x += size) {
-            t_box *box = malloc(sizeof(t_box));
-            box->x = x;
-            box->y = y;
-            box->height = size;
-            box->width = size;
-            box->has_black = check_black_percent(img, box);
-            if(box->has_black)
-                putpixel(img, x, y, SDL_MapRGB(img->format, 255, 0, 0));
-            boxes[i][j] = box;
+    for (int y = 0; y + size < img->h; y += size) {
+        for (int x = 0; x + size < img->w; x += size) {
+            t_box *box = new_box(x, y, size, size);
+            if (check_black_percent(img, box)) {
+                /* draw_box(img, box); */
+                setbox(boxes, i, j, box);
+                created_count++;
+            }
+            // TODO : Change this to fill the squares without black
+            // with NULL instead. Will have to adapt the rest of the code
+            else {
+                setbox(boxes, i, j, NULL);
+                free(box);
+            }
+
             j++;
-            created_count++;
         }
         i++;
         j = 0;
@@ -219,31 +210,126 @@ void divide_and_conquer(SDL_Surface *img) {
 
     int *line_len = calloc(vbox_count, sizeof(int));
 
-    printf("Created %d boxes\n", created_count);
-    for(int i = 0; i < vbox_count; i++){
+    // printf("Created %d boxes\n", created_count);
+    for (int i = 0; i < vbox_count; i++) {
         // For each line, the length of the line is the distance from the
         // first block with black in the line to the last
         t_box *first = NULL;
         t_box *last = NULL;
-        for(int j = 0; j < hbox_count; j++){
-            printf("i : %d j : %d\n", i, j);
-            if(boxes[i][j]->has_black){
-                printf("Box has black\n");
-                if(first)
-                    last = boxes[i][j];
-                else{
-                    first = boxes[i][j];
-                    last = first;
-                }
+        for (int j = 0; j < hbox_count; j++) {
+            t_box *current = getbox(boxes, i, j);
+            if (!current)
                 continue;
+            /* //printf("Box has black\n"); */
+            if (first)
+                last = current;
+            else {
+                first = current;
+                last = first;
             }
-            printf("Box doesn't have black\n");
+            // printf("Box doesn't have black\n");
         }
-        if(first && last){
+        if (first && last) {
             line_len[i] = last->x - first->x;
-            draw_line(img, SDL_MapRGB(img->format, 255, 0, 0), first->x, last->x, first->y);
+            /* draw_line(img, SDL_MapRGB(img->format, 255, 0, 0), first->x, */
+            /* last->x, first->y); */
         }
-        printf("Len of line %d : %d\n", i, line_len[i]);
+        // printf("Len of line %d : %d\n", i, line_len[i]);
+    }
+    // We now have the length of each individual line.
+    // We want to combine those lines together into a single, real lines
+    // If a box has a bottom neigh that has black, we assume that they're part
+    // of the same line
+    // At the moment, this only checks for bigger lines towards the right
+    // We want it to check left, too.
+    int *line_hs = calloc(vbox_count, sizeof(int));
+    int actual_lines_count = 0;
+    // TODO : Carefuly check how this algo works. (It does, but it isn't)
+    // completely clear to me now that I read it again
+    // It looks like it does way too many computations
+    for (int i = 0; i < vbox_count; i++) {
+        // There are no black chars on this line
+        if (line_len[i] == 0)
+            continue;
+        // printf("Line %d has a line\n", i);
+        int line_height = 0;
+        for (int j = 0; j < hbox_count; j++) {
+            t_box *current = getbox(boxes, i, j);
+            if (!current)
+                continue;
+            // Current has black pixels. We go down until the bottom neigh
+            // doesn't
+            while (current && j < hbox_count) {
+                if (!getbox(boxes, i + 1, j))
+                    break;
+                i++;
+                line_height++;
+                current = getbox(boxes, i, j);
+            }
+        }
+        line_hs[i] = line_height;
+        line_height = 0;
+        actual_lines_count++;
     }
 
+    // printf("We found %d actual lines of text\n", actual_lines_count);
+    for (int i = 0; i < vbox_count; i++)
+        if (line_hs[i] != 0)
+            printf("Line height : %d\n", line_hs[i]);
+
+    // At this point, we have the len of all lines of boxes, and the height of
+    // actual lines.
+    // We need to compute the actual start of the line on the x axis
+    // (could be before the start of first line we found) and the end of it.
+
+    t_box *line_start[actual_lines_count];
+    t_box *line_end[actual_lines_count];
+    int line = 0;
+    for (int i = 0; i < vbox_count; i++) {
+        for (int j = 0; j < vbox_count; j++) {
+            t_box *current = getbox(boxes, i, j);
+            if (!current)
+                continue;
+            printf("Current is the leftmost top\n");
+            // We have found leftmost block of the top of the line
+            // Let's scan from x = 0 to x = boxes->w for blocks
+            // using a line_hs[i] pixels high scanner
+            // The first box we find is the start of the line, the last
+            // box we find is the end of it
+            t_box *start = NULL;
+            t_box *end = NULL;
+            int height = get_nth_height(line_hs, vbox_count, line);
+            // This fixes a sefgault
+            if(!height)
+                break;
+            printf("Scanning the %dth line\n", line);
+            printf("Line height : %d\n", height);
+            for(int k = 0; k < hbox_count; k++){
+                for(int x = 0; x < height; x++){
+                    t_box *scanned = getbox(boxes, x + i, k);
+                    if(!scanned)
+                        continue;
+                    if(!start){
+                        start = scanned;
+                        end = scanned;
+                    }
+                    else{
+                        end = scanned;
+                    }
+                }
+            }
+            if(!start || !end)
+                break;
+            line_start[line] = start;
+            line_end[line] = end;
+            line++;
+            i += height + 1;
+        }
+    }
+    for(int i = 0; i < actual_lines_count; i++){
+        if(!line_start[i] || !line_end[i])
+            continue;
+        printf("Line start : %d | Line end : %d\n", line_start[i]->x, line_end[i]->x);
+        draw_line(img, SDL_MapRGB(img->format, 0, 0, 255), line_start[i]->x, line_end[i]->x, line_start[i]->y);
+    }
 }
