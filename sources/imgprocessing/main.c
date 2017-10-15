@@ -66,8 +66,6 @@ int main(int argc, char *argv[]){
     int t = otsu(img);
     binarize(img, t);
     display_image(img);
-    divide_and_conquer(img);
-    display_image(img);
     free(img);
     SDL_Quit();
     return 0;

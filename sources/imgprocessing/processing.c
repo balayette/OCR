@@ -181,6 +181,8 @@ int get_nth_height(int *ln, int lnlen, int n){
     return 0;
 }
 
+// DO NOT USE
+// EXPERIMENTAL
 void divide_and_conquer(SDL_Surface *img) {
     int size, hbox_count, vbox_count;
     t_boxes *boxes = init_dac(img, &size, &hbox_count, &vbox_count);
@@ -330,6 +332,9 @@ void divide_and_conquer(SDL_Surface *img) {
         if(!line_start[i] || !line_end[i])
             continue;
         printf("Line start : %d | Line end : %d\n", line_start[i]->x, line_end[i]->x);
-        draw_line(img, SDL_MapRGB(img->format, 0, 0, 255), line_start[i]->x, line_end[i]->x, line_start[i]->y);
+        /* draw_line(img, SDL_MapRGB(img->format, 0, 0, 255), line_start[i]->x, line_end[i]->x, line_start[i]->y); */
+        /* t_box *start = line_start[i]; */
+        /* t_box *end = line_start[i]; */
+
     }
 }
