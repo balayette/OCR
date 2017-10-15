@@ -62,11 +62,19 @@ int main(int argc, char *argv[]){
     (void)argc;
     printf("Loading an image from %s\n", argv[1]);
     SDL_Surface *img = load_image(argv[1]);
+    SDL_Surface *h;
+    SDL_Surface *v;
     gray_level(img);
     int t = otsu(img);
     binarize(img, t);
+    printf("%p\n", (void *)img);
+    SDL_Surface *ret = rlsa(img, 30, &h, &v);
+    printf("%p\n", (void *)ret);
     display_image(img);
-    free(img);
+    display_image(h);
+    display_image(v);
+    display_image(ret);
+    SDL_FreeSurface(img);
     SDL_Quit();
     return 0;
 }

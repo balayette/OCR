@@ -168,14 +168,13 @@ t_boxes *init_dac(SDL_Surface *img, int *size, int *hbox_count,
 // NextBot_with_BlackBottomNeigh
 /* void nb_with_bbn(SDL_Surface *img, t_boxes ***boxes, int i, int j) {} */
 
-int get_nth_height(int *ln, int lnlen, int n){
+int get_nth_height(int *ln, int lnlen, int n) {
     int k = -1;
-    for(int i = 0; i < lnlen; i++)
-    {
-        if(ln[i] == 0)
+    for (int i = 0; i < lnlen; i++) {
+        if (ln[i] == 0)
             continue;
         k++;
-        if(k == n)
+        if (k == n)
             return ln[i];
     }
     return 0;
@@ -302,25 +301,24 @@ void divide_and_conquer(SDL_Surface *img) {
             t_box *end = NULL;
             int height = get_nth_height(line_hs, vbox_count, line);
             // This fixes a sefgault
-            if(!height)
+            if (!height)
                 break;
             printf("Scanning the %dth line\n", line);
             printf("Line height : %d\n", height);
-            for(int k = 0; k < hbox_count; k++){
-                for(int x = 0; x < height; x++){
+            for (int k = 0; k < hbox_count; k++) {
+                for (int x = 0; x < height; x++) {
                     t_box *scanned = getbox(boxes, x + i, k);
-                    if(!scanned)
+                    if (!scanned)
                         continue;
-                    if(!start){
+                    if (!start) {
                         start = scanned;
                         end = scanned;
-                    }
-                    else{
+                    } else {
                         end = scanned;
                     }
                 }
             }
-            if(!start || !end)
+            if (!start || !end)
                 break;
             line_start[line] = start;
             line_end[line] = end;
@@ -328,13 +326,149 @@ void divide_and_conquer(SDL_Surface *img) {
             i += height + 1;
         }
     }
-    for(int i = 0; i < actual_lines_count; i++){
-        if(!line_start[i] || !line_end[i])
+    for (int i = 0; i < actual_lines_count; i++) {
+        if (!line_start[i] || !line_end[i])
             continue;
-        printf("Line start : %d | Line end : %d\n", line_start[i]->x, line_end[i]->x);
-        /* draw_line(img, SDL_MapRGB(img->format, 0, 0, 255), line_start[i]->x, line_end[i]->x, line_start[i]->y); */
+        printf("Line start : %d | Line end : %d\n", line_start[i]->x,
+               line_end[i]->x);
+        /* draw_line(img, SDL_MapRGB(img->format, 0, 0, 255), line_start[i]->x,
+         * line_end[i]->x, line_start[i]->y); */
         /* t_box *start = line_start[i]; */
         /* t_box *end = line_start[i]; */
-
     }
+}
+
+SDL_Surface *copy_surface(SDL_Surface *img) {
+    SDL_Surface *ret;
+    SDL_PixelFormat *fmt = img->format;
+    ret = SDL_CreateRGBSurface(img->flags, img->w, img->h, fmt->BitsPerPixel,
+                               fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask);
+    SDL_BlitSurface(img, NULL, ret, NULL);
+    return ret;
+}
+
+SDL_Surface *hrlsa(SDL_Surface *img, int c) {
+    SDL_Surface *copy = copy_surface(img);
+    Uint8 color;
+    for (int x = 0; x < img->h; x++) {
+        for (int y = 0; y < img->w; y++) {
+            int count = 0;
+            Uint32 pix = getpixel(img, y, x);
+            SDL_GetRGB(pix, img->format, &color, &color, &color);
+            if (color == 0) {
+                putpixel(copy, y, x, pix);
+                continue;
+            }
+            for (int k = -c; k <= c; k++) {
+                int newy = y + k;
+                if (newy < 0 || newy > copy->w)
+                  {
+                    count++;
+                    continue;
+                  }
+                Uint32 pix = getpixel(img, newy, x);
+                SDL_GetRGB(pix, img->format, &color, &color, &color);
+                if (color == 255)
+                    count++;
+                else
+                    count = 0;
+                if (count >= c)
+                    break;
+            }
+            if (count >= c) {
+                putpixel(copy, y, x, SDL_MapRGB(img->format, 255, 255, 255));
+            } else {
+                putpixel(copy, y, x, SDL_MapRGB(img->format, 0, 0, 0));
+            }
+        }
+    }
+    /* int test[10] = {0, 0, 0, 1, 0, 0, 0, 0, 0, 1}; */
+    /* int ret[10] = {0}; */
+    /* for(int i = 0; i < 10; i++){ */
+    /*   if(test[i] == 1){ */
+    /*     ret[i] = 1; */
+    /*     continue; */
+    /*   } */
+    /*   int count = 0; */
+    /*   for(int k = -c; k <= c; k++){ */
+    /*     int newi = i + k; */
+    /*     if(newi < 0 || newi > 10) */
+    /*       continue; */
+    /*     if(test[newi] == 0) */
+    /*       count++; */
+    /*     else */
+    /*       count = 0; */
+    /*   } */
+    /*   if(count >= c){ */
+    /*     ret[i] = 0; */
+    /*   } */
+    /*   else{ */
+    /*     ret[i] = 1; */
+    /*   } */
+    /* } */
+    return copy;
+}
+
+SDL_Surface *vrlsa(SDL_Surface *img, int c) {
+    SDL_Surface *copy = copy_surface(img);
+    Uint8 color;
+    for (int y = 0; y < img->w; y++) {
+        for (int x = 0; x < img->h; x++) {
+            int count = 0;
+            Uint32 pix = getpixel(img, y, x);
+            SDL_GetRGB(pix, img->format, &color, &color, &color);
+            if (color == 0) {
+                putpixel(copy, y, x, pix);
+                continue;
+            }
+            for (int k = -c; k <= c; k++) {
+                int newx = x + k;
+                if (newx < 0 || newx > copy->w)
+                  {
+                    count++;
+                    continue;
+                  }
+                Uint32 pix = getpixel(img, y, newx);
+                SDL_GetRGB(pix, img->format, &color, &color, &color);
+                if (color == 255)
+                    count++;
+                else
+                    count = 0;
+                if (count >= c)
+                    break;
+            }
+            if (count >= c) {
+                putpixel(copy, y, x, SDL_MapRGB(img->format, 255, 255, 255));
+            } else {
+                putpixel(copy, y, x, SDL_MapRGB(img->format, 0, 0, 0));
+            }
+        }
+    }
+    return copy;
+}
+
+SDL_Surface *recombine(SDL_Surface *h, SDL_Surface *v) {
+    SDL_Surface *ret = copy_surface(h);
+    Uint8 a, b;
+    for (int x = 0; x < h->h; x++) {
+        for (int y = 0; y < h->w; y++) {
+            Uint32 p1 = getpixel(h, y, x);
+            Uint32 p2 = getpixel(v, y, x);
+            SDL_GetRGB(p1, h->format, &a, &a, &a);
+            SDL_GetRGB(p2, v->format, &b, &b, &b);
+            if (a == 0 && b == 0) {
+                putpixel(ret, y, x, SDL_MapRGB(ret->format, 0, 0, 0));
+            } else {
+                putpixel(ret, y, x, SDL_MapRGB(ret->format, 255, 255, 255));
+            }
+        }
+    }
+
+    return ret;
+}
+
+SDL_Surface *rlsa(SDL_Surface *img, int c, SDL_Surface **h, SDL_Surface **v) {
+  *h = hrlsa(img, c);
+    *v = vrlsa(*h, c);
+    return recombine(*h, *v);
 }
