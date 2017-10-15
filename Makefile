@@ -11,10 +11,10 @@ MISCSRC=$(wildcard sources/misc/*.c)
 all: neuralnet imgprocessing
 
 neuralnet: $(NNSRC) $(MISCSRC)
-	clang -o $@.out $^ $(CFLAGS) $(LDFLAGS)
+	$(CC) -o $@.out $^ $(CFLAGS) $(LDFLAGS)
 
 imgprocessing: $(IMGSRC) $(MISCSRC)
-	clang -o $@.out $^ $(CFLAGS) $(CPPFLAGS) $(LDLIBS) $(LDFLAGS)
+	$(CC) -o $@.out $^ $(CFLAGS) $(CPPFLAGS) $(LDLIBS) $(LDFLAGS)
 
 clean:
 	rm -f ./*.out
