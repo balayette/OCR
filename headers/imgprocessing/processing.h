@@ -13,6 +13,7 @@ int otsu(SDL_Surface *img);
 
 void contrast(SDL_Surface *img, int value);
 
-void blur(SDL_Surface *img, int radius);
+SDL_Surface *blur(SDL_Surface *input, int radius);
 
+void divide_and_conquer(SDL_Surface *img);
 #endif

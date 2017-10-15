@@ -4,13 +4,24 @@
 #include <err.h>
 #include "../../headers/imgprocessing/processing.h"
 
+void print_mouse_pos(){
+    int a = 0;
+    int b = 0;
+    SDL_GetMouseState(&a, &b);
+    printf("Position x : %d y : %d\n", a, b);
+}
+
 void wait_for_keypressed(void) {
     SDL_Event             event;
     for (;;) {
         SDL_PollEvent( &event );
         switch (event.type) {
-        case SDL_KEYDOWN: return;
-        default: break;
+        case SDL_MOUSEBUTTONUP:
+            print_mouse_pos();
+            return;
+        case SDL_KEYDOWN:
+            return;
+        default:break;
         }
     }
 }
@@ -47,18 +58,15 @@ SDL_Surface* display_image(SDL_Surface *img) {
     return screen;
 }
 
-int main(int argv, char *argc[]){
-    (void)argv;
-    SDL_Surface *img = load_image(argc[1]);
-    display_image(img);
+int main(int argc, char *argv[]){
+    (void)argc;
+    printf("Loading an image from %s\n", argv[1]);
+    SDL_Surface *img = load_image(argv[1]);
     gray_level(img);
-    display_image(img);
     int t = otsu(img);
-    printf("Optimal threshold : %d\n", t);
     binarize(img, t);
     display_image(img);
-    blur(img, 1);
-    display_image(img);
     free(img);
+    SDL_Quit();
     return 0;
 }
