@@ -361,11 +361,10 @@ SDL_Surface *hrlsa(SDL_Surface *img, int c) {
             }
             for (int k = -c; k <= c; k++) {
                 int newy = y + k;
-                if (newy < 0 || newy > copy->w)
-                  {
+                if (newy < 0 || newy > copy->w) {
                     count++;
                     continue;
-                  }
+                }
                 Uint32 pix = getpixel(img, newy, x);
                 SDL_GetRGB(pix, img->format, &color, &color, &color);
                 if (color == 255)
@@ -423,11 +422,10 @@ SDL_Surface *vrlsa(SDL_Surface *img, int c) {
             }
             for (int k = -c; k <= c; k++) {
                 int newx = x + k;
-                if (newx < 0 || newx > copy->w)
-                  {
+                if (newx < 0 || newx > copy->w) {
                     count++;
                     continue;
-                  }
+                }
                 Uint32 pix = getpixel(img, y, newx);
                 SDL_GetRGB(pix, img->format, &color, &color, &color);
                 if (color == 255)
@@ -468,7 +466,9 @@ SDL_Surface *recombine(SDL_Surface *h, SDL_Surface *v) {
 }
 
 SDL_Surface *rlsa(SDL_Surface *img, int c, SDL_Surface **h, SDL_Surface **v) {
-  *h = hrlsa(img, c);
-    *v = vrlsa(*h, c);
-    return recombine(*h, *v);
+    (void)c;
+    *h = hrlsa(img, img->w / 5);
+    *v = vrlsa(img, img->h / 10);
+    SDL_Surface *rec = recombine(*h, *v);
+    return hrlsa(rec, 5);
 }
