@@ -381,30 +381,6 @@ SDL_Surface *hrlsa(SDL_Surface *img, int c) {
             }
         }
     }
-    /* int test[10] = {0, 0, 0, 1, 0, 0, 0, 0, 0, 1}; */
-    /* int ret[10] = {0}; */
-    /* for(int i = 0; i < 10; i++){ */
-    /*   if(test[i] == 1){ */
-    /*     ret[i] = 1; */
-    /*     continue; */
-    /*   } */
-    /*   int count = 0; */
-    /*   for(int k = -c; k <= c; k++){ */
-    /*     int newi = i + k; */
-    /*     if(newi < 0 || newi > 10) */
-    /*       continue; */
-    /*     if(test[newi] == 0) */
-    /*       count++; */
-    /*     else */
-    /*       count = 0; */
-    /*   } */
-    /*   if(count >= c){ */
-    /*     ret[i] = 0; */
-    /*   } */
-    /*   else{ */
-    /*     ret[i] = 1; */
-    /*   } */
-    /* } */
     return copy;
 }
 
