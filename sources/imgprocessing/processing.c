@@ -395,8 +395,8 @@ t_bool_matrix *hrlsa_bm(t_bool_matrix *img, int c){
                         break;
                 }
             }
-            if(count <= c)
-                M_bool_SET(img, x, y, true);
+            if(count < c)
+                M_bool_SET(copy, x, y, true);
         }
     }
     return copy;
@@ -414,19 +414,31 @@ t_bool_matrix *vrlsa_bm(t_bool_matrix *img, int c){
             for(int k = -c; k <= c; k++){
                 int newy = y + k;
                 if(newy < 0 || newy >= img->cols)
-                    count++;
+                  count++;
                 else{
-                    if(!M_bool_GET(img, newy, y))
+                    if(!M_bool_GET(img, x, newy))
                         count++;
                     else
                         count = 0;
+                    if(count >= c)
+                      break;
                 }
             }
-            if(count <= c)
-                M_bool_SET(img, x, y, true);
+            if(count < c)
+                M_bool_SET(copy, x, y, true);
         }
     }
     return copy;
+}
+
+t_bool_matrix *recombine_bm(t_bool_matrix *a, t_bool_matrix *b){
+  t_bool_matrix *ret = CREATE_bool_MATRIX(a->lines, a->cols);
+  for(int y = 0; y < ret->lines; y++){
+    for(int x = 0; x < ret->cols; x++){
+      M_bool_SET(ret, x, y, M_bool_GET(a, x, y) & M_bool_GET(b, x, y));
+    }
+  }
+  return ret;
 }
 
 SDL_Surface *hrlsa(SDL_Surface *img, int c) {
