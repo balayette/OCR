@@ -391,9 +391,9 @@ t_bool_matrix *hrlsa_bm(t_bool_matrix *img, int c){
                         count++;
                     else
                         count = 0;
-                    if(count >= c)
-                        break;
                 }
+                if(count >= c)
+                    break;
             }
             if(count < c)
                 M_bool_SET(copy, x, y, true);
@@ -413,16 +413,16 @@ t_bool_matrix *vrlsa_bm(t_bool_matrix *img, int c){
             int count = 0;
             for(int k = -c; k <= c; k++){
                 int newy = y + k;
-                if(newy < 0 || newy >= img->cols)
+                if(newy < 0 || newy >= img->lines)
                   count++;
                 else{
                     if(!M_bool_GET(img, x, newy))
                         count++;
                     else
                         count = 0;
-                    if(count >= c)
-                      break;
                 }
+                if(count >= c)
+                    break;
             }
             if(count < c)
                 M_bool_SET(copy, x, y, true);

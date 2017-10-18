@@ -13,10 +13,10 @@ int main(int argc, char *argv[]) {
     display_and_wait(&screen, img);
     int t = otsu(img);
     binarize(img, t);
-    display_and_wait(&screen, img);
+    /* display_and_wait(&screen, img); */
     t_bool_matrix *m = surface_to_matrix(img);
-    t_bool_matrix *h = hrlsa_bm(m, 30);
-    t_bool_matrix *v = vrlsa_bm(h, 30);
+    t_bool_matrix *h = hrlsa_bm(m, m->cols / 5);
+    t_bool_matrix *v = vrlsa_bm(h, m->lines / 10);
     /* for(int y = 0; y < m->lines; y++) */
     /* { */
     /*     for(int x = 0; x < m->cols; x++){ */
