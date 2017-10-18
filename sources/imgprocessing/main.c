@@ -5,6 +5,7 @@
 #include "../../headers/misc/bool_matrix.h"
 #include "../../headers/imgprocessing/pixop.h"
 #include "../../headers/imgprocessing/processing.h"
+#include "../../headers/imgprocessing/rxy.h"
 
 int main(int argc, char *argv[]) {
     (void)argc;
@@ -13,29 +14,42 @@ int main(int argc, char *argv[]) {
     display_and_wait(&screen, img);
     int t = otsu(img);
     binarize(img, t);
-    /* display_and_wait(&screen, img); */
-    t_bool_matrix *m = surface_to_matrix(img);
-    t_bool_matrix *h = hrlsa_bm(m, m->cols / 5);
-    t_bool_matrix *v = vrlsa_bm(h, m->lines / 10);
-    /* for(int y = 0; y < m->lines; y++) */
-    /* { */
-    /*     for(int x = 0; x < m->cols; x++){ */
-    /*         printf("M : %d | H : %d\n", M_bool_GET(m, x, y), M_bool_GET(h, x, y)); */
-    /*     } */
-    /* } */
+    display_and_wait(&screen, img);
 
-    SDL_Surface *reth = copy_surface(img);
-    SDL_Surface *retv = copy_surface(img);
-    matrix_to_surface(retv, v);
-    matrix_to_surface(reth, h);
-    display_and_wait(&screen, reth);
-    display_and_wait(&screen, retv);
-    t_bool_matrix *finalret = recombine_bm(h, v);
-    SDL_Surface *finals = copy_surface(img);
-    matrix_to_surface(finals, finalret);
-    display_and_wait(&screen, finals);
-    SDL_FreeSurface(img);
-    SDL_FreeSurface(screen);
-    SDL_Quit();
+    t_bool_matrix *matrix = surface_to_matrix(img);
+
+    t_bintree *woot = rxy(matrix, 5);
+    /* depth_first_print(woot, INORDER); */
+    printf("Size : %d\n", count(woot));
+
+    /* SDL_Surface *screen = NULL; */
+    /* SDL_Surface *img = load_image(argv[1]); */
+    /* display_and_wait(&screen, img); */
+    /* int t = otsu(img); */
+    /* binarize(img, t); */
+    /* /\* display_and_wait(&screen, img); *\/ */
+    /* t_bool_matrix *m = surface_to_matrix(img); */
+    /* t_bool_matrix *h = hrlsa_bm(m, m->cols / 5); */
+    /* t_bool_matrix *v = vrlsa_bm(h, m->lines / 10); */
+    /* /\* for(int y = 0; y < m->lines; y++) *\/ */
+    /* /\* { *\/ */
+    /* /\*     for(int x = 0; x < m->cols; x++){ *\/ */
+    /* /\*         printf("M : %d | H : %d\n", M_bool_GET(m, x, y), M_bool_GET(h, x, y)); *\/ */
+    /* /\*     } *\/ */
+    /* /\* } *\/ */
+
+    /* SDL_Surface *reth = copy_surface(img); */
+    /* SDL_Surface *retv = copy_surface(img); */
+    /* matrix_to_surface(retv, v); */
+    /* matrix_to_surface(reth, h); */
+    /* display_and_wait(&screen, reth); */
+    /* display_and_wait(&screen, retv); */
+    /* t_bool_matrix *finalret = recombine_bm(h, v); */
+    /* SDL_Surface *finals = copy_surface(img); */
+    /* matrix_to_surface(finals, finalret); */
+    /* display_and_wait(&screen, finals); */
+    /* SDL_FreeSurface(img); */
+    /* SDL_FreeSurface(screen); */
+    /* SDL_Quit(); */
     return 0;
 }
