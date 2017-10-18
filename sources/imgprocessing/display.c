@@ -18,7 +18,7 @@ void print_mouse_pos(void) {
 void wait_for_keypressed(void) {
     SDL_Event event;
     for (;;) {
-        SDL_PollEvent(&event);
+        SDL_WaitEvent(&event);
         switch (event.type) {
         case SDL_MOUSEBUTTONUP:
             print_mouse_pos();
