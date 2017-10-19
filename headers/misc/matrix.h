@@ -18,6 +18,10 @@
     }                                                                          \
     void M_##Type##_SET(t_##Type##_matrix *m, int x, int y, Type value) {      \
         m->values[x + y * m->cols] = value;                                    \
+    }                                                                          \
+    void M_##Type##_FREE(t_##Type##_matrix *m) {                               \
+        free(m->values);                                                       \
+        free(m);                                                               \
     }
 
 #define INIT_MATRIX_HEADER(Type)                                               \
@@ -28,6 +32,7 @@
     } t_##Type##_matrix;                                                       \
     t_##Type##_matrix *CREATE_##Type##_MATRIX(int lines, int cols);            \
     Type M_##Type##_GET(t_##Type##_matrix *m, int x, int y);                   \
+    void M_##Type##_FREE(t_##Type##_matrix *m);                                \
     void M_##Type##_SET(t_##Type##_matrix *m, int x, int y, Type value);
 
 #endif

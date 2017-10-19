@@ -359,6 +359,7 @@ void matrix_to_surface(SDL_Surface *surface, t_bool_matrix *m){
     for(int y = 0; y < m->lines; y++){
         for(int x = 0; x < m->cols; x++){
             int val = M_bool_GET(m, x, y) ? 0 : 255;
+            /* printf("%d\n", val); */
             putpixel(surface, x, y, SDL_MapRGB(surface->format, val, val, val));
         }
     }

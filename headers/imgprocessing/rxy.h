@@ -24,4 +24,6 @@ int count(t_bintree *b);
 
 t_bintree *rxy(t_bool_matrix *img, int size);
 
+void free_bintree(t_bintree *b);
+
 #endif

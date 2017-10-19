@@ -1,11 +1,49 @@
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <stdbool.h>
 #include "../../headers/imgprocessing/display.h"
-#include "../../headers/misc/bool_matrix.h"
 #include "../../headers/imgprocessing/pixop.h"
 #include "../../headers/imgprocessing/processing.h"
 #include "../../headers/imgprocessing/rxy.h"
+#include "../../headers/misc/bool_matrix.h"
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <stdbool.h>
+
+
+void disp_bin_tree_leafs(SDL_Surface **screen, SDL_Surface *img, t_bintree *b) {
+    if (!b)
+        return;
+    if(!b->children){
+        t_bool_matrix *value = b->value;
+        SDL_Surface *s = SDL_CreateRGBSurface(
+            img->flags, value->cols, value->lines, img->format->BitsPerPixel,
+            img->format->Rmask, img->format->Gmask, img->format->Bmask,
+            img->format->Ashift);
+        matrix_to_surface(s, value);
+        display_and_wait(screen, s);
+    }
+    else if(b->children[0] || b->children[1]){
+        if(b->children[0])
+            disp_bin_tree_leafs(screen, img, b->children[0]);
+        if(b->children[1])
+            disp_bin_tree_leafs(screen, img, b->children[1]);
+    }
+}
+
+void disp_bin_tree(SDL_Surface **screen, SDL_Surface *img, t_bintree *b) {
+    if (!b)
+        return;
+    t_bool_matrix *value = b->value;
+    SDL_Surface *s = SDL_CreateRGBSurface(
+        img->flags, value->cols, value->lines, img->format->BitsPerPixel,
+        img->format->Rmask, img->format->Gmask, img->format->Bmask,
+        img->format->Ashift);
+    matrix_to_surface(s, value);
+    display_and_wait(screen, s);
+    SDL_FreeSurface(s);
+    if(!b->children)
+        return;
+    disp_bin_tree(screen, img, b->children[0]);
+    disp_bin_tree(screen, img, b->children[1]);
+}
 
 int main(int argc, char *argv[]) {
     (void)argc;
@@ -14,42 +52,18 @@ int main(int argc, char *argv[]) {
     display_and_wait(&screen, img);
     int t = otsu(img);
     binarize(img, t);
-    display_and_wait(&screen, img);
 
     t_bool_matrix *matrix = surface_to_matrix(img);
 
-    t_bintree *woot = rxy(matrix, 5);
+    t_bintree *woot = rxy(matrix, 20);
     /* depth_first_print(woot, INORDER); */
     printf("Size : %d\n", count(woot));
+    disp_bin_tree_leafs(&screen, img, woot);
 
-    /* SDL_Surface *screen = NULL; */
-    /* SDL_Surface *img = load_image(argv[1]); */
-    /* display_and_wait(&screen, img); */
-    /* int t = otsu(img); */
-    /* binarize(img, t); */
-    /* /\* display_and_wait(&screen, img); *\/ */
-    /* t_bool_matrix *m = surface_to_matrix(img); */
-    /* t_bool_matrix *h = hrlsa_bm(m, m->cols / 5); */
-    /* t_bool_matrix *v = vrlsa_bm(h, m->lines / 10); */
-    /* /\* for(int y = 0; y < m->lines; y++) *\/ */
-    /* /\* { *\/ */
-    /* /\*     for(int x = 0; x < m->cols; x++){ *\/ */
-    /* /\*         printf("M : %d | H : %d\n", M_bool_GET(m, x, y), M_bool_GET(h, x, y)); *\/ */
-    /* /\*     } *\/ */
-    /* /\* } *\/ */
+    free_bintree(woot);
 
-    /* SDL_Surface *reth = copy_surface(img); */
-    /* SDL_Surface *retv = copy_surface(img); */
-    /* matrix_to_surface(retv, v); */
-    /* matrix_to_surface(reth, h); */
-    /* display_and_wait(&screen, reth); */
-    /* display_and_wait(&screen, retv); */
-    /* t_bool_matrix *finalret = recombine_bm(h, v); */
-    /* SDL_Surface *finals = copy_surface(img); */
-    /* matrix_to_surface(finals, finalret); */
-    /* display_and_wait(&screen, finals); */
-    /* SDL_FreeSurface(img); */
-    /* SDL_FreeSurface(screen); */
-    /* SDL_Quit(); */
+    SDL_FreeSurface(img);
+    SDL_FreeSurface(screen);
+    SDL_Quit();
     return 0;
 }
