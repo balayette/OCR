@@ -1,6 +1,7 @@
 #include "../../headers/imgprocessing/recxy.h"
 #include "../../headers/imgprocessing/display.h"
 #include "../../headers/imgprocessing/processing.h"
+#include "../../headers/imgprocessing/drawing.h"
 #include "../../headers/imgprocessing/recxy.h"
 #include "../../headers/misc/bool_matrix.h"
 #include <SDL/SDL.h>
@@ -149,10 +150,10 @@ t_bool_matrix *after_h(t_bool_matrix *mat, int y) {
 }
 
 // x included
-t_bool_matrix *before_v(t_bool_matrix *mat, int x){
+t_bool_matrix *before_v(t_bool_matrix *mat, int x) {
     t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines, x + 1);
-    for(int i = 0; i <= x; i++){
-        for(int y = 0; y < mat->lines; y++){
+    for (int i = 0; i <= x; i++) {
+        for (int y = 0; y < mat->lines; y++) {
             M_bool_SET(ret, i, y, M_bool_GET(mat, i, y));
         }
     }
@@ -160,10 +161,10 @@ t_bool_matrix *before_v(t_bool_matrix *mat, int x){
 }
 
 // x included
-t_bool_matrix *after_v(t_bool_matrix *mat, int x){
+t_bool_matrix *after_v(t_bool_matrix *mat, int x) {
     t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines, mat->cols - x);
-    for(int i = x; i < mat->cols; i++){
-        for(int y = 0; y < mat->lines; y++){
+    for (int i = x; i < mat->cols; i++) {
+        for (int y = 0; y < mat->lines; y++) {
             M_bool_SET(ret, i - x, y, M_bool_GET(mat, i, y));
         }
     }
@@ -183,7 +184,7 @@ void _recxy(t_rxy_bintree *parent, bool h, int cut, bool endnext) {
         int c = find_h_cut(parent->values, cut);
         if (c == -1) {
             printf("Couldn't find a split\n");
-            if(endnext){
+            if (endnext) {
                 printf("Ending the recursion\n");
                 return;
             }
@@ -210,41 +211,94 @@ void _recxy(t_rxy_bintree *parent, bool h, int cut, bool endnext) {
     } else {
         printf("Vertical\n");
         int c = find_v_cut(parent->values, cut);
-        if(c == -1){
+        if (c == -1) {
             printf("Couldn't find a split\n");
-            if(endnext){
+            if (endnext) {
                 printf("Ending the recursion\n");
                 return;
             }
             endnext = true;
         }
         printf("C : %d\n", c);
-        if(is_white(parent->values, 0, 0, parent->values->lines, c) || is_white(parent->values, c, 0, parent->values->lines, parent->values->cols - c - 1)){
+        if (is_white(parent->values, 0, 0, parent->values->lines, c) ||
+            is_white(parent->values, c, 0, parent->values->lines,
+                     parent->values->cols - c - 1)) {
             printf("One of the cuts is white, ignoring it...\n");
             endnext = true;
-        }
-        else{
+        } else {
             printf("Found 2 good V splits\n");
             t_bool_matrix *before = before_v(parent->values, c - 1);
             t_bool_matrix *after = after_v(parent->values, c + cut);
-            t_rxy_bintree *left_child = create_rxy_bintree(before, parent->x, parent->y);
-            t_rxy_bintree *right_child = create_rxy_bintree(after, c + cut, parent->y);
+            t_rxy_bintree *left_child =
+                create_rxy_bintree(before, parent->x, parent->y);
+            t_rxy_bintree *right_child =
+                create_rxy_bintree(after, c + cut, parent->y);
             parent->left = left_child;
             parent->right = right_child;
             endnext = false;
         }
     }
-    if(!endnext){
+    if (!endnext) {
         _recxy(parent->left, !h, cut, endnext);
         _recxy(parent->right, !h, cut, endnext);
-    }
-    else{
+    } else {
         _recxy(parent, !h, cut, endnext);
     }
 }
 
-t_rxy_bintree *recxy(t_bool_matrix *img) {
+void _recxy_only_h(t_rxy_bintree *parent, int cut) {
+    printf("Parent : L x C : %d x %d\n", parent->values->lines,
+           parent->values->cols);
+    if (parent->values->lines < 20 || parent->values->cols < 20) {
+        printf("The parent is small enough\n");
+        return;
+    }
+    int c = find_h_cut(parent->values, cut);
+    if (c == -1) {
+        printf("Couldn't find a split\n");
+        printf("Ending the recursion\n");
+        return;
+    }
+    printf("C : %d\n", c);
+    if (is_white(parent->values, 0, 0, c, parent->values->cols) ||
+        is_white(parent->values, 0, c + 1, parent->values->lines - c - 1,
+                 parent->values->cols)) {
+        printf("One of the cuts is white, ignoring it...\n");
+        return;
+    } else {
+        printf("Found 2 good H splits\n");
+        t_bool_matrix *before = before_h(parent->values, c - 1);
+        t_bool_matrix *after = after_h(parent->values, c + cut);
+        t_rxy_bintree *left_child =
+            create_rxy_bintree(before, parent->x, parent->y);
+        t_rxy_bintree *right_child =
+            create_rxy_bintree(after, parent->x, c + cut);
+        parent->left = left_child;
+        parent->right = right_child;
+    }
+    _recxy_only_h(parent->left, cut);
+    _recxy_only_h(parent->right, cut);
+}
+
+t_rxy_bintree *recxy(t_bool_matrix *img, bool onlyh) {
     t_rxy_bintree *ret = create_rxy_bintree(img, 0, 0);
-    _recxy(ret, true, 5, false);
+    if(!onlyh){
+        _recxy(ret, true, 1, false);
+    }
+    else{
+        _recxy_only_h(ret, 5);
+    }
     return ret;
+}
+
+void draw_boxes(SDL_Surface *img, t_rxy_bintree *b){
+    if(!b)
+        return;
+    if(!b->left && !b->right){
+        draw_rect_outline(img, b->x, b->y, b->values->lines, b->values->cols, SDL_MapRGB(img->format, 255, 0, 0));
+        return;
+    }
+
+    draw_boxes(img, b->left);
+    draw_boxes(img, b->right);
 }

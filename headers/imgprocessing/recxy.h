@@ -25,9 +25,11 @@ int bcount(t_rxy_bintree *b);
 
 int bcount_leafs(t_rxy_bintree *b);
 
-t_rxy_bintree *recxy(t_bool_matrix *img);
+t_rxy_bintree *recxy(t_bool_matrix *img, bool onlyh);
 
 void depth_first_display(SDL_Surface **screen, Uint32 flags, SDL_PixelFormat *fmt, t_rxy_bintree *b);
 
 void depth_first_display_leaves(SDL_Surface **screen, Uint32 flags, SDL_PixelFormat *fmt, t_rxy_bintree *b);
+
+void draw_boxes(SDL_Surface *img, t_rxy_bintree *b);
 #endif

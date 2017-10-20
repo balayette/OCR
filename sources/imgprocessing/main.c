@@ -81,10 +81,12 @@ int main(int argc, char *argv[]) {
 
     t_bool_matrix *matrix = surface_to_matrix(img);
 
-    t_rxy_bintree *woot = recxy(matrix);
+    t_rxy_bintree *woot = recxy(matrix, true);
     depth_first_display_leaves(&screen, img->flags, img->format, woot);
     printf("Size : %d\n", bcount(woot));
     printf("Size : %d\n", bcount_leafs(woot));
+    /* draw_boxes(img, woot); */
+    /* display_and_wait(&screen, img); */
     /* t_bintree *woot = rxy(matrix, 14, 500); */
 
     /* /\* depth_first_print(woot, INORDER); *\/ */
