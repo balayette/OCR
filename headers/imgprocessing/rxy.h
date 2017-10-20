@@ -13,16 +13,18 @@ typedef struct s_bintree t_bintree;
 struct s_bintree {
     t_bool_matrix *value;
     t_bintree **children;
+    int x;
+    int y;
     int size;
 };
 
-t_bintree *create_bintree(t_bool_matrix *value, t_bintree *left, t_bintree *right);
+t_bintree *create_bintree(t_bool_matrix *value, int x, int y, t_bintree *left, t_bintree *right);
 
 void depth_first_print(t_bintree *b, T_PRINT_POSITION p);
 
 int count(t_bintree *b);
 
-t_bintree *rxy(t_bool_matrix *img, int size);
+t_bintree *rxy(t_bool_matrix *img, int hsize, int vsize);
 
 void free_bintree(t_bintree *b);
 
