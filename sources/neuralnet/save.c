@@ -18,7 +18,11 @@ void save_nn(t_neural_net *nn, char *path) {
     fwrite(&nn->neuron_count, sizeof(int), 1, file);
 
     for (int i = 0; i <= nn->hidden_layer_count; i++) {
+
         for (int y = 0; y < nn->layers[i + 1]->neuron_count; y++) {
+            fwrite(&nn->layers[i + 1]->bias_weights[y], sizeof(double),
+                   nn->layers[i + 1]->neuron_count, file);
+
             for (int j = 0; j < nn->layers[i + 1]->prev_layer_size; j++) {
                 fwrite(&nn->layers[i + 1]->weights[y][j], sizeof(double),
                        nn->layers[i + 1]->neuron_count, file);
@@ -28,7 +32,7 @@ void save_nn(t_neural_net *nn, char *path) {
     fclose(file);
 }
 
-t_neural_net * load_nn(char *path) {
+t_neural_net *load_nn(char *path) {
 
     FILE *file = fopen(path, "rb");
 
@@ -50,11 +54,14 @@ t_neural_net * load_nn(char *path) {
     r = fread(&count, sizeof(int), 1, file);
     if (r == 0)
         return NULL;
-
     t_neural_net *nn = create_nn(inputs, hidden, count, outputs);
 
     for (int i = 0; i <= nn->hidden_layer_count; i++) {
         for (int y = 0; y < nn->layers[i + 1]->neuron_count; y++) {
+            r = fread(&nn->layers[i + 1]->bias_weights[y], sizeof(double),
+                      nn->layers[i + 1]->neuron_count, file);
+            if (r == 0)
+                return NULL;
             for (int j = 0; j < nn->layers[i + 1]->prev_layer_size; j++) {
                 r = fread(&nn->layers[i + 1]->weights[y][j], sizeof(double),
                           nn->layers[i + 1]->neuron_count, file);
