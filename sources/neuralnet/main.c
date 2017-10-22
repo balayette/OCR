@@ -11,7 +11,8 @@ int main(int argc, const char *argv[]) {
     }
     int rep = atoi(argv[1]);
     srand(0xDEADBEEF);
-
+    rep +=1;
+    /*
     t_neural_net *nn = create_nn(2, 1, 3, 1);
     double input[4][2] = {{1, 1}, {0, 0}, {1, 0}, {0, 1}};
 
@@ -27,8 +28,10 @@ int main(int argc, const char *argv[]) {
         print_double_arr(nn->layers[2]->values, nn->output_count);
         print_nn(nn);
     }
-    save_nn(nn);
-    load_nn(fopen("nn.save", "r"));
+    save_nn(nn, "nn.save");
+*/
+    t_neural_net *nn = load_nn("nn.save");
+    print_nn(nn);
     free_nn(nn);
     return 0;
 }

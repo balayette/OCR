@@ -4,10 +4,8 @@
 #include "neuralnet.h"
 #include <stdio.h>
 
-void save_nn(t_neural_net *nn);
+void save_nn(t_neural_net *nn, char *path);
 
-void load_nn(FILE* file);
-
-void binput(size_t const size, void const* const ptr, FILE* file);
+t_neural_net * load_nn(char *path);
 
 #endif
