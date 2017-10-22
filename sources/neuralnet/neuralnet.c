@@ -118,6 +118,6 @@ void back_prop(t_neural_net *nn, double *expected, double *input) {
                 hidden_layer->deltas[neuron] *
                 input[prev_n];
         }
-        output_layer->bias_weights[neuron] += hidden_layer->deltas[neuron];
+        hidden_layer->bias_weights[neuron] += hidden_layer->deltas[neuron];
     }
 }
