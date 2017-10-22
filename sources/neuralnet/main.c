@@ -1,5 +1,6 @@
 #include "../../headers/neuralnet/neuralnet.h"
 #include "../../headers/misc/utils.h"
+#include "../../headers/neuralnet/save.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -26,6 +27,8 @@ int main(int argc, const char *argv[]) {
         print_double_arr(nn->layers[2]->values, nn->output_count);
         print_nn(nn);
     }
+    save_nn(nn);
+    load_nn(fopen("nn.save", "r"));
     free_nn(nn);
     return 0;
 }
