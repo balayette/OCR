@@ -1,39 +1,45 @@
+#include "../../headers/imgprocessing/drawing.h"
+#include "../../headers/imgprocessing/display.h"
+#include "../../headers/imgprocessing/pixop.h"
+#include "../../headers/imgprocessing/processing.h"
+#include "../../headers/imgprocessing/recxy.h"
+#include "../../headers/misc/bool_matrix.h"
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <stdbool.h>
-#include "../../headers/imgprocessing/display.h"
-#include "../../headers/misc/bool_matrix.h"
-#include "../../headers/imgprocessing/pixop.h"
-#include "../../headers/imgprocessing/processing.h"
+
+void aol(t_rxy_bintree *b){
+    _recxy_only_v(b, 1);
+}
 
 int main(int argc, char *argv[]) {
     (void)argc;
     SDL_Surface *screen = NULL;
     SDL_Surface *img = load_image(argv[1]);
-    display_and_wait(&screen, img);
     int t = otsu(img);
     binarize(img, t);
-    /* display_and_wait(&screen, img); */
-    t_bool_matrix *m = surface_to_matrix(img);
-    t_bool_matrix *h = hrlsa_bm(m, m->cols / 5);
-    t_bool_matrix *v = vrlsa_bm(h, m->lines / 10);
-    /* for(int y = 0; y < m->lines; y++) */
-    /* { */
-    /*     for(int x = 0; x < m->cols; x++){ */
-    /*         printf("M : %d | H : %d\n", M_bool_GET(m, x, y), M_bool_GET(h, x, y)); */
-    /*     } */
-    /* } */
 
-    SDL_Surface *reth = copy_surface(img);
-    SDL_Surface *retv = copy_surface(img);
-    matrix_to_surface(retv, v);
-    matrix_to_surface(reth, h);
-    display_and_wait(&screen, reth);
-    display_and_wait(&screen, retv);
-    t_bool_matrix *finalret = recombine_bm(h, v);
-    SDL_Surface *finals = copy_surface(img);
-    matrix_to_surface(finals, finalret);
-    display_and_wait(&screen, finals);
+
+    /* t_rxy_bintree *woot = recxy(matrix, true); */
+    /* depth_first_display_leaves(&screen, img->flags, img->format, woot); */
+    /* printf("Size : %d\n", bcount(woot)); */
+    /* printf("Size : %d\n", bcount_leafs(woot)); */
+    /* draw_boxes_leaves(img, woot, 0, 0, 0); */
+    /* display_and_wait(&screen, img); */
+    /* apply_on_leaves(woot, aol); */
+    /* apply_on_leaves(woot, trim_white_cols); */
+    /* draw_boxes_leaves(img, woot, 0, 0, 0); */
+    /* display_and_wait(&screen, img); */
+    /* depth_first_display_leaves(&screen, img->flags, img->format, woot); */
+    /* t_bintree *woot = rxy(matrix, 14, 500); */
+
+    /* /\* depth_first_print(woot, INORDER); *\/ */
+    /* printf("Size : %d\n", count(woot->children[1])); */
+
+    /* disp_bin_tree(&screen, img, woot->children[1]); */
+    /* free_bintree(woot); */
+    /* display_and_wait(&screen, img); */
+
     SDL_FreeSurface(img);
     SDL_FreeSurface(screen);
     SDL_Quit();

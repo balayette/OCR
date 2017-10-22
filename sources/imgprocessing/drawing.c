@@ -12,7 +12,7 @@ void draw_rect_fill(SDL_Surface *img, int x, int y, int h, int w) {
 }
 
 void draw_line(SDL_Surface *img, Uint32 color, int xstart, int xend, int y) {
-    for (int i = xstart; i < xend; i++)
+    for (int i = xstart; i < xend && i < img->w && y < img->h; i++)
         putpixel(img, i, y, color);
 }
 void draw_rect_outline(SDL_Surface *img, int x, int y, int h, int w, Uint32 c) {
