@@ -32,4 +32,6 @@ void depth_first_display(SDL_Surface **screen, Uint32 flags, SDL_PixelFormat *fm
 void depth_first_display_leaves(SDL_Surface **screen, Uint32 flags, SDL_PixelFormat *fmt, t_rxy_bintree *b);
 
 void draw_boxes(SDL_Surface *img, t_rxy_bintree *b);
+
+void _recxy_only_v(t_rxy_bintree *parent, int cut);
 #endif

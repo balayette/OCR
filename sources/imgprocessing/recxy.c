@@ -48,6 +48,7 @@ void depth_first_display_leaves(SDL_Surface **screen, Uint32 flags,
         return;
     }
     printf("Printing\n");
+    disp_bool_matrix(b->values);
     SDL_Surface *s = SDL_CreateRGBSurface(
         flags, b->values->cols, b->values->lines, fmt->BitsPerPixel, fmt->Rmask,
         fmt->Gmask, fmt->Bmask, fmt->Amask);
@@ -280,13 +281,38 @@ void _recxy_only_h(t_rxy_bintree *parent, int cut) {
     _recxy_only_h(parent->right, cut);
 }
 
+void _recxy_only_v(t_rxy_bintree *parent, int cut){
+    if(parent->values->cols < 20){
+        printf("Small enough\n");
+        return;
+    }
+    int c = find_v_cut(parent->values, cut);
+    if(c == -1){
+        printf("Couldn't find a cut\n");
+        return;
+    }
+    printf("C : %d\n", c);
+    t_bool_matrix *before = before_v(mat, c - 1);
+    t_bool_matrix *after = after_v(mat, c + cut);
+    t_rxy_bintree *left = create_rxy_bintree(before, parent->x, parent->y);
+    t_rxy_bintree *right = create_rxy_bintree(after, parent->x + cut, parent->y);
+    parent->left = left;
+    parent->right = right;
+    _recxy_only_v(parent->left, cut);
+    _recxy_only_v(parent->right, cut);
+}
+
+/* void _rec_only_v(t_rxy_bintree *parent, int cut){ */
+/*     if(parent->values->lines <  ) */
+/* } */
+
 t_rxy_bintree *recxy(t_bool_matrix *img, bool onlyh) {
     t_rxy_bintree *ret = create_rxy_bintree(img, 0, 0);
     if(!onlyh){
         _recxy(ret, true, 1, false);
     }
     else{
-        _recxy_only_h(ret, 5);
+        _recxy_only_h(ret, 1);
     }
     return ret;
 }
