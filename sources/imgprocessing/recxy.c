@@ -1,7 +1,7 @@
 #include "../../headers/imgprocessing/recxy.h"
 #include "../../headers/imgprocessing/display.h"
-#include "../../headers/imgprocessing/processing.h"
 #include "../../headers/imgprocessing/drawing.h"
+#include "../../headers/imgprocessing/processing.h"
 #include "../../headers/imgprocessing/recxy.h"
 #include "../../headers/misc/bool_matrix.h"
 #include <SDL/SDL.h>
@@ -273,7 +273,7 @@ void _recxy_only_h(t_rxy_bintree *parent, int cut) {
         t_rxy_bintree *left_child =
             create_rxy_bintree(before, parent->x, parent->y);
         t_rxy_bintree *right_child =
-            create_rxy_bintree(after, parent->x, c + cut);
+            create_rxy_bintree(after, parent->x, parent->y + c + cut);
         parent->left = left_child;
         parent->right = right_child;
     }
@@ -281,50 +281,122 @@ void _recxy_only_h(t_rxy_bintree *parent, int cut) {
     _recxy_only_h(parent->right, cut);
 }
 
-void _recxy_only_v(t_rxy_bintree *parent, int cut){
-    if(parent->values->cols < 20){
+void apply_on_leaves2(t_rxy_bintree *b, t_bool_matrix *(*f)(t_bool_matrix *)){
+    if(!b){
+        return;
+    }
+    if(!b->left && !b->right){
+        b->values = f(b->values);
+    }
+    else{
+        apply_on_leaves2(b->left, f);
+        apply_on_leaves2(b->right, f);
+    }
+}
+void apply_on_leaves(t_rxy_bintree *b, void (*f)(t_rxy_bintree *)) {
+    if (!b) {
+        return;
+    }
+    if (!b->left && !b->right) {
+        f(b);
+    }
+    else{
+        apply_on_leaves(b->left, f);
+        apply_on_leaves(b->right, f);
+    }
+}
+
+t_bool_matrix *_trim_cols_before(t_bool_matrix *mat){
+    if(!mat)
+        return NULL;
+    int x = 0;
+    for(; x < mat->cols; x++){
+        if(!is_white_col(mat, x))
+            break;
+    }
+    if(x == 0 || x == mat->cols - 1){
+        return NULL;
+    }
+    t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines, mat->cols - x);
+    for(int y = 0; y < mat->lines; y++){
+        for(int i = x; i < mat->cols; i++){
+            M_bool_SET(ret, i - x, y, M_bool_GET(mat, i, y));
+        }
+    }
+    return ret;
+}
+
+t_bool_matrix *_trim_lines_before(t_bool_matrix *mat){
+    if(!mat){
+        return NULL;
+    }
+    int y = 0;
+    for(; y < mat->lines; y++){
+        if(!is_white_line(mat, y))
+            break;
+    }
+    if(y == 0 || y == mat->lines - 1){
+        return NULL;
+    }
+    t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines - y , mat->cols);
+    for(int x = 0; x < mat->cols; x++){
+        for(int j = y; j < mat->lines; j++){
+            M_bool_SET(ret, x, j - y, M_bool_GET(mat, x, j));
+        }
+    }
+    return ret;
+}
+
+void trim_white_cols(t_rxy_bintree *b){
+    t_bool_matrix *new = _trim_cols_before(b->values);
+    if(new){
+        printf("Removing\n");
+        b->x += (b->values->cols - new->cols);
+        b->values = new;
+    }
+    printf("Nothing\n");
+}
+
+void _recxy_only_v(t_rxy_bintree *parent, int cut) {
+    if (parent->values->cols < 20) {
         printf("Small enough\n");
         return;
     }
     int c = find_v_cut(parent->values, cut);
-    if(c == -1){
+    if (c == -1) {
         printf("Couldn't find a cut\n");
         return;
     }
     printf("C : %d\n", c);
-    t_bool_matrix *before = before_v(mat, c - 1);
-    t_bool_matrix *after = after_v(mat, c + cut);
+    t_bool_matrix *before = before_v(parent->values, c - 1);
+    t_bool_matrix *after = after_v(parent->values, c + cut);
     t_rxy_bintree *left = create_rxy_bintree(before, parent->x, parent->y);
-    t_rxy_bintree *right = create_rxy_bintree(after, parent->x + cut, parent->y);
+    t_rxy_bintree *right =
+        create_rxy_bintree(after, parent->x + c + 1, parent->y);
     parent->left = left;
     parent->right = right;
     _recxy_only_v(parent->left, cut);
     _recxy_only_v(parent->right, cut);
 }
 
-/* void _rec_only_v(t_rxy_bintree *parent, int cut){ */
-/*     if(parent->values->lines <  ) */
-/* } */
-
 t_rxy_bintree *recxy(t_bool_matrix *img, bool onlyh) {
     t_rxy_bintree *ret = create_rxy_bintree(img, 0, 0);
-    if(!onlyh){
+    if (!onlyh) {
         _recxy(ret, true, 1, false);
-    }
-    else{
+    } else {
         _recxy_only_h(ret, 1);
     }
     return ret;
 }
 
-void draw_boxes(SDL_Surface *img, t_rxy_bintree *b){
-    if(!b)
+void draw_boxes_leaves(SDL_Surface *img, t_rxy_bintree *b, int red, int green, int blue) {
+    if (!b)
         return;
-    if(!b->left && !b->right){
-        draw_rect_outline(img, b->x, b->y, b->values->lines, b->values->cols, SDL_MapRGB(img->format, 255, 0, 0));
+    if (!b->left && !b->right) {
+        draw_rect_outline(img, b->x, b->y, b->values->lines, b->values->cols,
+                          SDL_MapRGB(img->format, red, green, blue));
         return;
     }
-
-    draw_boxes(img, b->left);
-    draw_boxes(img, b->right);
+    draw_boxes_leaves(img, b->left, red, green, blue);
+    draw_boxes_leaves(img, b->right, red, green, blue);
 }

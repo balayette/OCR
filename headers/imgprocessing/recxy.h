@@ -31,7 +31,11 @@ void depth_first_display(SDL_Surface **screen, Uint32 flags, SDL_PixelFormat *fm
 
 void depth_first_display_leaves(SDL_Surface **screen, Uint32 flags, SDL_PixelFormat *fmt, t_rxy_bintree *b);
 
-void draw_boxes(SDL_Surface *img, t_rxy_bintree *b);
+void draw_boxes_leaves(SDL_Surface *img, t_rxy_bintree *b, int red, int green, int blue);
 
 void _recxy_only_v(t_rxy_bintree *parent, int cut);
+
+void apply_on_leaves(t_rxy_bintree *b, void (*f)(t_rxy_bintree *));
+void apply_on_leaves2(t_rxy_bintree *b, t_bool_matrix *(*f)(t_bool_matrix *));
+void trim_white_cols(t_rxy_bintree *b);
 #endif
