@@ -21,3 +21,4 @@ imgprocessing: $(IMGSRC) $(MISCSRC)
 clean:
 	rm -f ./*.out
 	rm -f ./*.d
+	rm -f nn.save
