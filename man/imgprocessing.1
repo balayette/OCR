@@ -1,0 +1,52 @@
+.TH IMGPROCESSING 1
+
+.SH NAME
+imgprocessing \- process images
+
+.SH SYNOPSIS
+.B imgprocessing
+[\fB\-\-nw\fR] [\fBOPTIONS\fR]... \fIFILE\fR [\fB-o\fR \fIOUTPUT\fR]
+
+.SH DESCRIPTION
+Apply various image processing techniques to an image
+
+.SH OPTIONS
+.TP
+.BR \-\-nw
+Do not display the image in a window
+.TP
+.BR \-g ", " \-\-grayscale
+Apply a weighted grayscale to the image
+
+.TP
+.BR \-i ", " \-\-invert
+Invert the image
+
+.TP
+.BR \-t ", " \-\-otsu
+Apply otsu's algorithm and binarize the image. The image has to be grayscale.
+
+.TP
+\fB\-b\fR radius \fB\-\-blur\fR radius
+Apply a blur of \fIradius\fR pixels on the image.
+
+.TP
+\fB\-c\fR value \fB\-\-contrast\fR value
+Change the contrast of the image by \fIvalue\fR.
+\fIvalue\fR belongs to the range -127,127
+
+.TP
+\fB\-\-\vrlsa\fR value
+Apply vertical RLSA to the image, with C=\fIvalue\fR
+
+.TP
+\fB\-\-\hrlsa\fR value
+Apply horizontal RLSA to the image, with C=\fIvalue\fR
+
+.TP
+\fB\-\-rlsa\fR value
+Apply RLSA to the image, with C=\fIvalue\fR
+
+.TP
+\-o
+Save the resulting image to \fIOUTPUT\fR

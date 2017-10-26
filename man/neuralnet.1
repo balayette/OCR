@@ -1,0 +1,32 @@
+.TH NEURALNET 1
+
+.SH NAME
+neuralnet \- train and use a neural net on XOR or images
+
+.SH SYNOPSIS
+.B neuralnet
+\fB\-\-xor|\-\-ocr\fR
+[\fB\-\-train\fR]
+[\fB\-\-compute\fR]
+[\fISAVEFILE\fR]
+[\fIINPUTFILE\fR]
+
+.SH DESCRIPTION
+Train a neural network, or load it from a file.
+
+.SH OPTIONS
+.TP
+.BR \-\-xor
+Set the neural network to train or load a XOR neural network
+.TP
+.BR \-\-ocr
+Set the neural network to train or load an OCR neural network
+.TP
+.BR \-\-train
+Train the neural network, and save to \fISAVEFILE\fR.
+If no \fISAVEFILE\fR is specified, save to \fInn.save\fR.
+.TP
+.BR \-\-compute
+Load the neural network from \fISAVEFILE\fR and output results from applying it to \fIINPUTFILE\fR.
+If no \fISAVEFILE\fR is specified, try to load from \fInn.save\fR.
+If no \fIINPUTFILE\fR is specified, exit.
