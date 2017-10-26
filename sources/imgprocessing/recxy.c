@@ -350,24 +350,30 @@ t_bool_matrix *_trim_lines_before(t_bool_matrix *mat){
 void trim_white_cols(t_rxy_bintree *b){
     t_bool_matrix *new = _trim_cols_before(b->values);
     if(new){
-        printf("Removing\n");
         b->x += (b->values->cols - new->cols);
         b->values = new;
     }
-    printf("Nothing\n");
+}
+
+void trim_white_lines(t_rxy_bintree *b){
+    t_bool_matrix *new = _trim_lines_before(b->values);
+    if(new){
+        b->y += (b->values->lines - new->lines);
+        b->values = new;
+    }
 }
 
 void _recxy_only_v(t_rxy_bintree *parent, int cut) {
     if (parent->values->cols < 20) {
-        printf("Small enough\n");
+        /* printf("Small enough\n"); */
         return;
     }
     int c = find_v_cut(parent->values, cut);
     if (c == -1) {
-        printf("Couldn't find a cut\n");
+        /* printf("Couldn't find a cut\n"); */
         return;
     }
-    printf("C : %d\n", c);
+    /* printf("C : %d\n", c); */
     t_bool_matrix *before = before_v(parent->values, c - 1);
     t_bool_matrix *after = after_v(parent->values, c + cut);
     t_rxy_bintree *left = create_rxy_bintree(before, parent->x, parent->y);

@@ -536,10 +536,17 @@ SDL_Surface *recombine(SDL_Surface *h, SDL_Surface *v) {
     return ret;
 }
 
+t_bool_matrix *rlsa_bm(t_bool_matrix *img, int c, t_bool_matrix **h, t_bool_matrix **v){
+    (void)c;
+    *h = hrlsa_bm(img, img->cols / 5);
+    *v = vrlsa_bm(*h, img->lines / 15);
+    return recombine_bm(*h, *v);
+}
+
 SDL_Surface *rlsa(SDL_Surface *img, int c, SDL_Surface **h, SDL_Surface **v) {
     (void)c;
     *h = hrlsa(img, img->w / 5);
-    *v = vrlsa(img, img->h / 10);
+    *v = vrlsa(*h, img->h / 15);
     SDL_Surface *rec = recombine(*h, *v);
     return hrlsa(rec, 5);
 }

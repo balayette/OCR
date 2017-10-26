@@ -38,4 +38,5 @@ void _recxy_only_v(t_rxy_bintree *parent, int cut);
 void apply_on_leaves(t_rxy_bintree *b, void (*f)(t_rxy_bintree *));
 void apply_on_leaves2(t_rxy_bintree *b, t_bool_matrix *(*f)(t_bool_matrix *));
 void trim_white_cols(t_rxy_bintree *b);
+void trim_white_lines(t_rxy_bintree *b);
 #endif

@@ -1,0 +1,12 @@
+
+|                                   README                                    |
+
+Project: OCR, coded in C. Two main parts: Image processing, Neural Network.
+
+Made For The S3 Project in EPITA. October 2017
+This software car recognize text in images.
+
+Utilization:
+		Compile the project : make
+		Launch the process : ./image_processing.out [img path]
+		Generating a new nn.save : ./neuralnet.out [nbr of iterations]

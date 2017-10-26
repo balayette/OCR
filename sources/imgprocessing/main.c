@@ -13,12 +13,41 @@ void aol(t_rxy_bintree *b){
 }
 
 int main(int argc, char *argv[]) {
-    (void)argc;
+    if(argc <= 1)
+    {
+        printf("Need a path\n");
+        exit(1);
+    }
+    bool do_it = false;
+    if(argc > 2){
+        do_it = true;
+    }
     SDL_Surface *screen = NULL;
     SDL_Surface *img = load_image(argv[1]);
+    display_and_wait(&screen, img);
+    gray_level(img);
+    display_and_wait(&screen, img);
     int t = otsu(img);
     binarize(img, t);
+    display_and_wait(&screen, img);
+    if(do_it){
+        SDL_Surface *h;
+        SDL_Surface *v;
+        SDL_Surface *c = rlsa(img, 5, &h, &v);
+        display_and_wait(&screen, h);
+        display_and_wait(&screen, v);
+        display_and_wait(&screen, c);
+    }
 
+    t_bool_matrix *matrix = surface_to_matrix(img);
+    t_rxy_bintree *rxy = recxy(matrix, true);
+    /* draw_boxes_leaves(img, rxy, 255, 0, 0); */
+    /* display_and_wait(&screen, img); */
+    apply_on_leaves(rxy, aol);
+    apply_on_leaves(rxy, trim_white_cols);
+    apply_on_leaves(rxy, trim_white_lines);
+    draw_boxes_leaves(img, rxy, 0, 0, 255);
+    display_and_wait(&screen, img);
 
     /* t_rxy_bintree *woot = recxy(matrix, true); */
     /* depth_first_display_leaves(&screen, img->flags, img->format, woot); */

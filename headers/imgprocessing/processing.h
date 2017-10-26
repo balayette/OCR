@@ -31,4 +31,5 @@ t_bool_matrix *vrlsa_bm(t_bool_matrix *img, int c);
 t_bool_matrix *recombine_bm(t_bool_matrix *a, t_bool_matrix *b);
 
 SDL_Surface *copy_surface(SDL_Surface *img);
+t_bool_matrix *rlsa_bm(t_bool_matrix *img, int c, t_bool_matrix **h, t_bool_matrix **v);
 #endif
