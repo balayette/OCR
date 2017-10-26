@@ -2,6 +2,7 @@
 **/*.d
 **/*.o
 **/*.save
+**/*.swp
 
 # https://github.com/github/gitignore/blob/master/Autotools.gitignore
 Makefile.in
