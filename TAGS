@@ -1,148 +1,0 @@
-    
-headers/imgprocessing/boxes.h,161
-#define BOXES_HBOXES_H2,16
-typedef struct s_boxes {s_boxes6,51
-    t_box ***boxes;boxes7,76
-    int h;h8,96
-    int w;w9,107
-} t_boxes;t_boxes10,118
-
-headers/imgprocessing/pixop.h,29
-#define PIXOP_HPIXOP_H2,16
-
-headers/imgprocessing/drawing.h,33
-#define DRAWING_HDRAWING_H2,18
-
-headers/imgprocessing/box.h,260
-#define BOX_HBOX_H2,14
-typedef struct s_box {s_box8,73
-    int x;x9,96
-    int y;y10,107
-    int height;height11,118
-    int width;width12,134
-    bool is_top_of_line;is_top_of_line13,149
-    int line_span;line_span14,174
-} t_box;t_box15,193
-
-headers/imgprocessing/processing.h,39
-#define PROCESSING_HPROCESSING_H2,21
-
-headers/misc/utils.h,29
-#define UTILS_HUTILS_H2,16
-
-headers/neuralnet/layer.h,465
-#define LAYER_HLAYER_H2,16
-typedef struct s_layer {s_layer34,962
-    int neuron_count;neuron_count35,987
-    int prev_layer_size;prev_layer_size36,1009
-    bool output_layer;output_layer37,1034
-    double **weights;weights38,1057
-    double *hidden_values;hidden_values39,1079
-    double *values;values40,1106
-    double *deltas;deltas41,1126
-    double *bias_weights;bias_weights42,1146
-    double bias;bias43,1172
-} t_layer;t_layer44,1189
-
-headers/neuralnet/neuralnet.h,368
-#define NEURAL_NET_HNEURAL_NET_H2,21
-typedef struct s_neural_net {s_neural_net14,207
-    int input_count;input_count15,237
-    int hidden_layer_count;hidden_layer_count16,258
-    int neuron_count;neuron_count17,286
-    int output_count;output_count18,308
-    t_layer **layers;layers19,330
-    double bias;bias20,352
-} t_neural_net;t_neural_net21,369
-
-sources/imgprocessing/processing.c,1253
-void map_image(SDL_Surface *img,map_image9,231
-Uint32 get_gray_level(SDL_Surface *img, Uint8 *r, Uint8 *g, Uint8 *b) {get_gray_level22,641
-void gray_level(SDL_Surface *img) { map_image(img, get_gray_level); }gray_level27,834
-Uint32 get_inverse(SDL_Surface *img, Uint8 *r, Uint8 *g, Uint8 *b) {get_inverse29,905
-void inverse(SDL_Surface *img) { map_image(img, get_inverse); }inverse36,1082
-void binarize(SDL_Surface *img, int threshold) {binarize38,1147
-void contrast(SDL_Surface *img, int value) {contrast51,1556
-SDL_Surface *blur(SDL_Surface *input, int radius) {blur67,2121
-int otsu(SDL_Surface *img) {otsu108,3468
-#define CUTS CUTS149,4652
-t_boxes *init_dac(SDL_Surface *img, int *size, int *hbox_count,init_dac152,4695
-int get_nth_height(int *ln, int lnlen, int n) {get_nth_height171,5328
-void divide_and_conquer(SDL_Surface *img) {divide_and_conquer185,5588
-SDL_Surface *copy_surface(SDL_Surface *img) {copy_surface341,11392
-SDL_Surface *hrlsa(SDL_Surface *img, int c) {hrlsa350,11720
-SDL_Surface *vrlsa(SDL_Surface *img, int c) {vrlsa412,13590
-SDL_Surface *recombine(SDL_Surface *h, SDL_Surface *v) {recombine450,14817
-SDL_Surface *rlsa(SDL_Surface *img, int c, SDL_Surface **h, SDL_Surface **v) {rlsa470,15451
-
-sources/imgprocessing/drawing.c,289
-void draw_rect_fill(SDL_Surface *img, int x, int y, int h, int w) {draw_rect_fill4,69
-void draw_line(SDL_Surface *img, Uint32 color, int xstart, int xend, int y) {draw_line14,315
-void draw_rect_outline(SDL_Surface *img, int x, int y, int h, int w, Uint32 c) {draw_rect_outline18,471
-
-sources/imgprocessing/pixop.c,260
-static inline Uint8 *pixelref(SDL_Surface *surf, unsigned x, unsigned y) {pixelref4,75
-Uint32 getpixel(SDL_Surface *surface, unsigned x, unsigned y) {getpixel9,258
-void putpixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel) {putpixel27,714
-
-sources/imgprocessing/boxes.c,310
-t_box *getbox(t_boxes *boxes, int i, int j) { return boxes->boxes[i][j]; }getbox6,114
-void setbox(t_boxes *boxes, int i, int j, t_box *box) {setbox8,190
-t_boxes *new_boxes(int v, int h) {new_boxes14,325
-t_box *get_next_bwbn(t_boxes *boxes, int i, int j, int towards, int direction){get_next_bwbn29,745
-
-sources/imgprocessing/box.c,214
-bool check_black_percent(SDL_Surface *img, t_box *box) {check_black_percent7,184
-void draw_box(SDL_Surface *img, t_box *box) {draw_box28,773
-t_box *new_box(int x, int y, int height, int width) {new_box33,945
-
-sources/imgprocessing/main.c,315
-void print_mouse_pos(){print_mouse_pos7,137
-void wait_for_keypressed(void) {wait_for_keypressed14,271
-void init_sdl(void) {init_sdl29,586
-SDL_Surface* load_image(char *path) {load_image35,725
-SDL_Surface* display_image(SDL_Surface *img) {display_image43,913
-int main(int argc, char *argv[]){main61,1422
-
-sources/misc/utils.c,835
-void mapi(double (*f)(double), double *list, const int count) {mapi8,133
-double *map(double (*f)(double), double *input, const int count){map13,266
-double sum_double_arr(double *arr, const int count) {sum_double_arr21,482
-void print_double_arr(double *arr, const int count) {print_double_arr29,642
-double sigmoid(double a) { return (1 / (1 + exp(-a))); }sigmoid44,986
-double sigmoid_deriv(double a) { return a * (1 - a); }sigmoid_deriv46,1044
-bool cmp_double_array(const double *a1, const int size1, const double *a2, const int size2){cmp_double_array48,1100
-double *div_scalar_by_array(double scalar, double *list, int count){div_scalar_by_array57,1350
-double *multiply_arrays(double *a1, double *a2, int count){multiply_arrays65,1565
-double threshold(double value) { return 0.5 > value ? 0 : 1; }threshold71,1760
-
-sources/neuralnet/layer.c,274
-void free_layer(t_layer *layer) {free_layer7,142
-void init_weights(t_layer *layer) {init_weights21,491
-t_layer *create_layer(const int prev_layer_size, const int neuron_count,create_layer33,913
-void process_input(t_layer *layer, double *input) {process_input54,1753
-
-sources/neuralnet/main.c,52
-int main(int argc, const char *argv[]) {main6,125
-
-sources/neuralnet/neuralnet.c,452
-t_neural_net *create_nn(const int input_count, const int hidden_layer_count,create_nn7,168
-void free_nn(t_neural_net *nn) {free_nn28,1052
-void print_nn(const t_neural_net *nn) {print_nn37,1277
-void forward_prop(t_neural_net *nn, double *input) {forward_prop51,1845
-double error(double *expected, double *result) { return *expected - *result; }error60,2152
-void back_prop(t_neural_net *nn, double *expected, double *input) {back_prop62,2232
-
-Makefile,379
-CC=clangCC1,0
-CFLAGS= -Wall -Wextra -pedantic -std=c99 -Werror -gCFLAGS2,9
-CPPFLAGS= `pkg-config --cflags sdl` -MMDCPPFLAGS3,61
-LDLIBS= `pkg-config --libs sdl` -lSDL_imageLDLIBS4,102
-LDFLAGS= -lmLDFLAGS5,146
-NNSRC=$(wildcard sources/neuralnet/*.c)NNSRC7,160
-IMGSRC=$(wildcard sources/imgprocessing/*.c)IMGSRC8,200
-MISCSRC=$(wildcard sources/misc/*.c)MISCSRC9,245
-
-res/ImagesOCR/Simples/index.html,0
-
-res/ImagesOCR/Advanced/index.html,0

@@ -8,9 +8,9 @@ LDFLAGS= -lm
 OPT=
 DBG=-g
 
-NNSRC=$(wildcard sources/neuralnet/*.c)
-IMGSRC=$(wildcard sources/imgprocessing/*.c)
-MISCSRC=$(wildcard sources/misc/*.c)
+NNSRC=$(wildcard src/sources/neuralnet/*.c)
+IMGSRC=$(wildcard src/sources/imgprocessing/*.c)
+MISCSRC=$(wildcard src/sources/misc/*.c)
 
 all: neuralnet imgprocessing
 
@@ -19,6 +19,14 @@ neuralnet: $(NNSRC) $(MISCSRC)
 
 imgprocessing: $(IMGSRC) $(MISCSRC)
 	$(CC) -o $@ $^ $(CFLAGS) $(DBG) $(OPT) $(SDL_CFLAGS) $(LDLIBS) $(SDL_LDFLAGS) $(LDFLAGS)
+
+.PHONY: doc
+doc:
+	doxygen doxyconfig
+	+$(MAKE) -C doc/latex/
+	cp doc/latex/refman.pdf doc/documentation.pdf
+	rm -rf doc/latex
+	rm -rf doc/html
 
 clean:
 	rm -f neuralnet

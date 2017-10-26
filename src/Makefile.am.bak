@@ -1,0 +1,8 @@
+CFLAGS= -Wall -Wextra -pedantic -std=c99 -Werror
+LDFLAGS=-lm
+
+bin_PROGRAMS = neuralnet imgprocessing
+neuralnet_SOURCES = sources/neuralnet/main.c sources/neuralnet/layer.c sources/neuralnet/neuralnet.c sources/neuralnet/save.c sources/misc/bool_matrix.c sources/misc/utils.c
+
+imgprocessing_SOURCES = sources/imgprocessing/box.c sources/imgprocessing/boxes.c sources/imgprocessing/display.c sources/imgprocessing/drawing.c sources/imgprocessing/sources/imgprocessing/main.c sources/imgprocessing/pixop.c sources/imgprocessing/processing.c sources/imgprocessing/rxy.c sources/imgprocessing/rexcy.c
+
