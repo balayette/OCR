@@ -1,3 +1,5 @@
-**/*.out
-**/*.d
-**/*.o
+neuralnet
+imgprocessing
+*.d
+*.o
+*.swp
