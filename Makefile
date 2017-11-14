@@ -25,6 +25,14 @@ imgprocessing: LDLIBS += `pkg-config --libs sdl` -lSDL_image
 imgprocessing: $(IMGOBJ) $(MISCOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
 
+.PHONY: doc
+doc:
+	doxygen doxyconfig
+	+$(MAKE) -C doc/latex/
+	cp doc/latex/refman.pdf doc/documentation.pdf
+	rm -rf doc/latex
+	rm -rf doc/html
+
 clean:
 	rm -f ./neuralnet
 	rm -f ./imgprocessing
