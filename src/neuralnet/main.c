@@ -1,6 +1,6 @@
-#include "../../headers/neuralnet/neuralnet.h"
-#include "../../headers/misc/utils.h"
-#include "../../headers/neuralnet/save.h"
+#include "neuralnet/neuralnet.h"
+#include "misc/utils.h"
+#include "neuralnet/save.h"
 #include <stdio.h>
 #include <stdlib.h>
 

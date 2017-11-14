@@ -1,14 +1,15 @@
-#include "../../headers/imgprocessing/drawing.h"
-#include "../../headers/imgprocessing/display.h"
-#include "../../headers/imgprocessing/pixop.h"
-#include "../../headers/imgprocessing/processing.h"
-#include "../../headers/imgprocessing/recxy.h"
-#include "../../headers/misc/bool_matrix.h"
+#include "imgprocessing/drawing.h"
+#include "imgprocessing/display.h"
+#include "imgprocessing/pixop.h"
+#include "imgprocessing/processing.h"
+#include "imgprocessing/recxy.h"
+#include "imgprocessing/rxy_bintree.h"
+#include "misc/bool_matrix.h"
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <stdbool.h>
 
-void aol(t_rxy_bintree *b){
+void aol(struct rxy_bintree *b){
     _recxy_only_v(b, 1);
 }
 
@@ -40,7 +41,7 @@ int main(int argc, char *argv[]) {
     }
 
     t_bool_matrix *matrix = surface_to_matrix(img);
-    t_rxy_bintree *rxy = recxy(matrix, true);
+    struct rxy_bintree *rxy = recxy(matrix, true);
     /* draw_boxes_leaves(img, rxy, 255, 0, 0); */
     /* display_and_wait(&screen, img); */
     apply_on_leaves(rxy, aol);

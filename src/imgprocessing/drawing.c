@@ -1,5 +1,5 @@
 #include <SDL/SDL.h>
-#include "../../headers/imgprocessing/pixop.h"
+#include "imgprocessing/pixop.h"
 
 void draw_rect_fill(SDL_Surface *img, int x, int y, int h, int w) {
     SDL_Rect *r = malloc(sizeof(SDL_Rect));

@@ -1,24 +1,38 @@
-CC=clang
-CFLAGS= -Wall -Wextra -pedantic -std=c99 -Werror
-CPPFLAGS= `pkg-config --cflags sdl` -MMD
-LDLIBS= `pkg-config --libs sdl` -lSDL_image
-LDFLAGS= -lm
-OPT=
-DBG=-g
+CFLAGS= -Wall -Wextra -pedantic -std=c99 -Werror -Iinclude/
+CPPFLAGS=
+LDLIBS=-lm
+LDFLAGS=
 
-NNSRC=$(wildcard sources/neuralnet/*.c)
-IMGSRC=$(wildcard sources/imgprocessing/*.c)
-MISCSRC=$(wildcard sources/misc/*.c)
+NNSRC=$(wildcard src/neuralnet/*.c)
+NNOBJ=$(NNSRC:.c=.o)
+
+IMGSRC=$(wildcard src/imgprocessing/*.c)
+IMGOBJ=$(IMGSRC:.c=.o)
+
+MISCSRC=$(wildcard src/misc/*.c)
+MISCOBJ=$(MISCSRC:.c=.o)
+
+opti: CFLAGS += -O3
+opti: all
 
 all: neuralnet imgprocessing
 
-neuralnet: $(NNSRC) $(MISCSRC)
-	$(CC) -o $@.out $^ $(CFLAGS) $(DBG) $(OPT) $(LDFLAGS)
+neuralnet: $(NNOBJ) $(MISCOBJ)
+	$(LINK.o) $^ -o $@ $(LDLIBS)
 
-imgprocessing: $(IMGSRC) $(MISCSRC)
-	$(CC) -o $@.out $^ $(CFLAGS) $(DBG) $(OPT) $(CPPFLAGS) $(LDLIBS) $(LDFLAGS)
+imgprocessing: CPPFLAGS += `pkg-config --cflags sdl` -MMD
+imgprocessing: LDLIBS += `pkg-config --libs sdl` -lSDL_image
+imgprocessing: $(IMGOBJ) $(MISCOBJ)
+	$(LINK.o) $^ -o $@ $(LDLIBS)
 
 clean:
-	rm -f ./*.out
-	rm -f ./*.d
+	rm -f ./neuralnet
+	rm -f ./imgprocessing
 	rm -f nn.save
+	rm -f $(NNOBJ)
+	rm -f $(IMGOBJ)
+	rm -f $(MISCOBJ)
+	rm -f $(NNSRC:.c=.d)
+	rm -f $(IMGSRC:.c=.d)
+	rm -f $(MISCSRC:.c=.d)
+	

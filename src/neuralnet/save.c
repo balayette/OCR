@@ -1,7 +1,7 @@
-#include "../../headers/neuralnet/save.h"
-#include "../../headers/misc/utils.h"
-#include "../../headers/neuralnet/layer.h"
-#include "../../headers/neuralnet/neuralnet.h"
+#include "neuralnet/save.h"
+#include "misc/utils.h"
+#include "neuralnet/layer.h"
+#include "neuralnet/neuralnet.h"
 #include <stdio.h>
 #include <stdlib.h>
 

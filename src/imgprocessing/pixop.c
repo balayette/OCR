@@ -1,4 +1,4 @@
-#include "../../headers/imgprocessing/pixop.h"
+#include "imgprocessing/pixop.h"
 #include <SDL/SDL_image.h>
 
 static inline Uint8 *pixelref(SDL_Surface *surf, unsigned x, unsigned y) {

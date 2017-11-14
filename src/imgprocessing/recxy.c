@@ -1,66 +1,12 @@
-#include "../../headers/imgprocessing/recxy.h"
-#include "../../headers/imgprocessing/display.h"
-#include "../../headers/imgprocessing/drawing.h"
-#include "../../headers/imgprocessing/processing.h"
-#include "../../headers/imgprocessing/recxy.h"
-#include "../../headers/misc/bool_matrix.h"
+#include "imgprocessing/display.h"
+#include "imgprocessing/drawing.h"
+#include "imgprocessing/processing.h"
+#include "imgprocessing/recxy.h"
+#include "imgprocessing/rxy_bintree.h"
+#include "misc/bool_matrix.h"
 #include <SDL/SDL.h>
 #include <stdlib.h>
 
-t_rxy_bintree *create_rxy_bintree(t_bool_matrix *value, int x, int y) {
-    t_rxy_bintree *ret = malloc(sizeof(t_rxy_bintree));
-    ret->x = x;
-    ret->y = y;
-    ret->values = value;
-    ret->left = NULL;
-    ret->right = NULL;
-    return ret;
-}
-
-int bcount_leafs(t_rxy_bintree *b) {
-    if (!b)
-        return 0;
-    if (b->left || b->right)
-        return bcount_leafs(b->left) + bcount_leafs(b->right);
-    return 1;
-}
-
-void depth_first_display(SDL_Surface **screen, Uint32 flags,
-                         SDL_PixelFormat *fmt, t_rxy_bintree *b) {
-    if (!b)
-        return;
-    SDL_Surface *s = SDL_CreateRGBSurface(
-        flags, b->values->cols, b->values->lines, fmt->BitsPerPixel, fmt->Rmask,
-        fmt->Gmask, fmt->Bmask, fmt->Amask);
-    matrix_to_surface(s, b->values);
-    display_and_wait(screen, s);
-    depth_first_display(screen, flags, fmt, b->left);
-    depth_first_display(screen, flags, fmt, b->right);
-}
-
-void depth_first_display_leaves(SDL_Surface **screen, Uint32 flags,
-                                SDL_PixelFormat *fmt, t_rxy_bintree *b) {
-    if (!b)
-        return;
-    if (b->left || b->right) {
-        depth_first_display_leaves(screen, flags, fmt, b->left);
-        depth_first_display_leaves(screen, flags, fmt, b->right);
-        return;
-    }
-    printf("Printing\n");
-    disp_bool_matrix(b->values);
-    SDL_Surface *s = SDL_CreateRGBSurface(
-        flags, b->values->cols, b->values->lines, fmt->BitsPerPixel, fmt->Rmask,
-        fmt->Gmask, fmt->Bmask, fmt->Amask);
-    matrix_to_surface(s, b->values);
-    display_and_wait(screen, s);
-}
-
-int bcount(t_rxy_bintree *b) {
-    if (!b)
-        return 0;
-    return 1 + bcount(b->left) + bcount(b->right);
-}
 
 bool is_white_col(t_bool_matrix *mat, int x) {
     for (int i = 0; i < mat->lines; i++)
@@ -172,7 +118,7 @@ t_bool_matrix *after_v(t_bool_matrix *mat, int x) {
     return ret;
 }
 
-void _recxy(t_rxy_bintree *parent, bool h, int cut, bool endnext) {
+void _recxy(struct rxy_bintree *parent, bool h, int cut, bool endnext) {
     printf("recxy | h : %d\n", h);
     printf("Parent : L x C : %d x %d\n", parent->values->lines,
            parent->values->cols);
@@ -201,9 +147,9 @@ void _recxy(t_rxy_bintree *parent, bool h, int cut, bool endnext) {
             printf("Found 2 good H splits\n");
             t_bool_matrix *before = before_h(parent->values, c - 1);
             t_bool_matrix *after = after_h(parent->values, c + cut);
-            t_rxy_bintree *left_child =
+            struct rxy_bintree *left_child =
                 create_rxy_bintree(before, parent->x, parent->y);
-            t_rxy_bintree *right_child =
+            struct rxy_bintree *right_child =
                 create_rxy_bintree(after, parent->x, c + cut);
             parent->left = left_child;
             parent->right = right_child;
@@ -230,9 +176,9 @@ void _recxy(t_rxy_bintree *parent, bool h, int cut, bool endnext) {
             printf("Found 2 good V splits\n");
             t_bool_matrix *before = before_v(parent->values, c - 1);
             t_bool_matrix *after = after_v(parent->values, c + cut);
-            t_rxy_bintree *left_child =
+            struct rxy_bintree *left_child =
                 create_rxy_bintree(before, parent->x, parent->y);
-            t_rxy_bintree *right_child =
+            struct rxy_bintree *right_child =
                 create_rxy_bintree(after, c + cut, parent->y);
             parent->left = left_child;
             parent->right = right_child;
@@ -247,7 +193,7 @@ void _recxy(t_rxy_bintree *parent, bool h, int cut, bool endnext) {
     }
 }
 
-void _recxy_only_h(t_rxy_bintree *parent, int cut) {
+void _recxy_only_h(struct rxy_bintree *parent, int cut) {
     printf("Parent : L x C : %d x %d\n", parent->values->lines,
            parent->values->cols);
     if (parent->values->lines < 20 || parent->values->cols < 20) {
@@ -270,40 +216,15 @@ void _recxy_only_h(t_rxy_bintree *parent, int cut) {
         printf("Found 2 good H splits\n");
         t_bool_matrix *before = before_h(parent->values, c - 1);
         t_bool_matrix *after = after_h(parent->values, c + cut);
-        t_rxy_bintree *left_child =
+        struct rxy_bintree *left_child =
             create_rxy_bintree(before, parent->x, parent->y);
-        t_rxy_bintree *right_child =
+        struct rxy_bintree *right_child =
             create_rxy_bintree(after, parent->x, parent->y + c + cut);
         parent->left = left_child;
         parent->right = right_child;
     }
     _recxy_only_h(parent->left, cut);
     _recxy_only_h(parent->right, cut);
-}
-
-void apply_on_leaves2(t_rxy_bintree *b, t_bool_matrix *(*f)(t_bool_matrix *)){
-    if(!b){
-        return;
-    }
-    if(!b->left && !b->right){
-        b->values = f(b->values);
-    }
-    else{
-        apply_on_leaves2(b->left, f);
-        apply_on_leaves2(b->right, f);
-    }
-}
-void apply_on_leaves(t_rxy_bintree *b, void (*f)(t_rxy_bintree *)) {
-    if (!b) {
-        return;
-    }
-    if (!b->left && !b->right) {
-        f(b);
-    }
-    else{
-        apply_on_leaves(b->left, f);
-        apply_on_leaves(b->right, f);
-    }
 }
 
 t_bool_matrix *_trim_cols_before(t_bool_matrix *mat){
@@ -347,7 +268,7 @@ t_bool_matrix *_trim_lines_before(t_bool_matrix *mat){
     return ret;
 }
 
-void trim_white_cols(t_rxy_bintree *b){
+void trim_white_cols(struct rxy_bintree *b){
     t_bool_matrix *new = _trim_cols_before(b->values);
     if(new){
         b->x += (b->values->cols - new->cols);
@@ -355,7 +276,7 @@ void trim_white_cols(t_rxy_bintree *b){
     }
 }
 
-void trim_white_lines(t_rxy_bintree *b){
+void trim_white_lines(struct rxy_bintree *b){
     t_bool_matrix *new = _trim_lines_before(b->values);
     if(new){
         b->y += (b->values->lines - new->lines);
@@ -363,7 +284,7 @@ void trim_white_lines(t_rxy_bintree *b){
     }
 }
 
-void _recxy_only_v(t_rxy_bintree *parent, int cut) {
+void _recxy_only_v(struct rxy_bintree *parent, int cut) {
     if (parent->values->cols < 20) {
         /* printf("Small enough\n"); */
         return;
@@ -376,8 +297,8 @@ void _recxy_only_v(t_rxy_bintree *parent, int cut) {
     /* printf("C : %d\n", c); */
     t_bool_matrix *before = before_v(parent->values, c - 1);
     t_bool_matrix *after = after_v(parent->values, c + cut);
-    t_rxy_bintree *left = create_rxy_bintree(before, parent->x, parent->y);
-    t_rxy_bintree *right =
+    struct rxy_bintree *left = create_rxy_bintree(before, parent->x, parent->y);
+    struct rxy_bintree *right =
         create_rxy_bintree(after, parent->x + c + 1, parent->y);
     parent->left = left;
     parent->right = right;
@@ -385,8 +306,8 @@ void _recxy_only_v(t_rxy_bintree *parent, int cut) {
     _recxy_only_v(parent->right, cut);
 }
 
-t_rxy_bintree *recxy(t_bool_matrix *img, bool onlyh) {
-    t_rxy_bintree *ret = create_rxy_bintree(img, 0, 0);
+struct rxy_bintree *recxy(t_bool_matrix *img, bool onlyh) {
+    struct rxy_bintree *ret = create_rxy_bintree(img, 0, 0);
     if (!onlyh) {
         _recxy(ret, true, 1, false);
     } else {
@@ -395,7 +316,7 @@ t_rxy_bintree *recxy(t_bool_matrix *img, bool onlyh) {
     return ret;
 }
 
-void draw_boxes_leaves(SDL_Surface *img, t_rxy_bintree *b, int red, int green, int blue) {
+void draw_boxes_leaves(SDL_Surface *img, struct rxy_bintree *b, int red, int green, int blue) {
     if (!b)
         return;
     if (!b->left && !b->right) {
