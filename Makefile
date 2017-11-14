@@ -28,6 +28,7 @@ imgprocessing: $(IMGOBJ) $(MISCOBJ)
 clean:
 	rm -f ./neuralnet
 	rm -f ./imgprocessing
+	rm -f nn.save
 	rm -f $(NNOBJ)
 	rm -f $(IMGOBJ)
 	rm -f $(MISCOBJ)
