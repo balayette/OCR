@@ -12,8 +12,8 @@ int main(int argc, const char *argv[]) {
     int rep = atoi(argv[1]);
     srand(0xDEADBEEF);
     //rep +=1;
-    //t_neural_net *nn = load_nn("nn.save");
-    t_neural_net *nn = create_nn(2, 1, 3, 1);
+    //struct neural_net *nn = load_nn("nn.save");
+    struct neural_net *nn = create_nn(2, 1, 3, 1);
     double input[4][2] = {{1, 1}, {0, 0}, {1, 0}, {0, 1}};
 
     double output[4][1] = {{0}, {0}, {1}, {1}};

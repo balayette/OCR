@@ -15,6 +15,9 @@ MISCOBJ=$(MISCSRC:.c=.o)
 opti: CFLAGS += -O3
 opti: all
 
+debug: CFLAGS += -g
+debug: all
+
 all: neuralnet imgprocessing
 
 neuralnet: $(NNOBJ) $(MISCOBJ)
@@ -43,4 +46,3 @@ clean:
 	rm -f $(NNSRC:.c=.d)
 	rm -f $(IMGSRC:.c=.d)
 	rm -f $(MISCSRC:.c=.d)
-	

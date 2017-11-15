@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void save_nn(t_neural_net *nn, char *path) {
+void save_nn(struct neural_net *nn, char *path) {
     FILE *file = fopen(path, "wb");
     if (file == NULL) {
         printf("Error while opening the file.");
@@ -32,7 +32,7 @@ void save_nn(t_neural_net *nn, char *path) {
     fclose(file);
 }
 
-t_neural_net *load_nn(char *path) {
+struct neural_net *load_nn(char *path) {
 
     FILE *file = fopen(path, "rb");
 
@@ -54,7 +54,7 @@ t_neural_net *load_nn(char *path) {
     r = fread(&count, sizeof(int), 1, file);
     if (r == 0)
         return NULL;
-    t_neural_net *nn = create_nn(inputs, hidden, count, outputs);
+    struct neural_net *nn = create_nn(inputs, hidden, count, outputs);
 
     for (int i = 0; i <= nn->hidden_layer_count; i++) {
         for (int y = 0; y < nn->layers[i + 1]->neuron_count; y++) {

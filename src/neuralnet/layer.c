@@ -4,10 +4,13 @@
 #include <stdio.h>
 #include <string.h>
 
-void free_layer(t_layer *layer) {
+void free_layer(struct layer *layer) {
+  printf("Freeing a layer at address %p\n", (void *)layer);
     if (layer->weights) {
+      printf("Freeing weights at address %p\n", (void *)layer->weights);
         for (int i = 0; i < layer->neuron_count; i++) {
-            /* printf("Freeing weight %d\n", i); */
+            printf("Freeing weitgh %d at address %p\n", i,
+                   (void *)(layer->weights + i));
             free(layer->weights[i]);
         }
     }
@@ -18,7 +21,7 @@ void free_layer(t_layer *layer) {
     free(layer);
 }
 
-void init_weights(t_layer *layer) {
+void init_weights(struct layer *layer) {
     double **arr = malloc(sizeof(double *) * layer->neuron_count);
     for (int i = 0; i < layer->neuron_count; i++) {
         arr[i] = malloc(sizeof(double) * layer->neuron_count *
@@ -30,10 +33,10 @@ void init_weights(t_layer *layer) {
     layer->weights = arr;
 }
 
-t_layer *create_layer(const int prev_layer_size, const int neuron_count,
-                      const bool random_weights, double **weights,
-                      const bool output_layer, double bias) {
-    t_layer *layer = malloc(sizeof(t_layer));
+struct layer *create_layer(const int prev_layer_size, const int neuron_count,
+                           const bool random_weights, double **weights,
+                           const bool output_layer, double bias) {
+    struct layer *layer = malloc(sizeof(struct layer));
     layer->prev_layer_size = prev_layer_size;
     layer->neuron_count = neuron_count;
     layer->output_layer = output_layer;
@@ -42,21 +45,23 @@ t_layer *create_layer(const int prev_layer_size, const int neuron_count,
     layer->deltas = calloc(neuron_count, sizeof(double));
     layer->bias_weights = calloc(neuron_count, sizeof(double));
     layer->bias = bias;
-    for(int i = 0; i < neuron_count; i++)
+    layer->weights = NULL;
+    for (int i = 0; i < neuron_count; i++)
         layer->bias_weights[i] = 1.0;
-    if (random_weights)
+    if (random_weights && prev_layer_size != 0)
         init_weights(layer);
     else
         layer->weights = weights;
     return layer;
 }
 
-void process_input(t_layer *layer, double *input) {
+void process_input(struct layer *layer, double *input) {
     double *input_sum = calloc(layer->neuron_count, sizeof(double));
     /* printf("\nProcessing the input in the layer\n"); */
     for (int i = 0; i < layer->neuron_count; i++) {
         for (int y = 0; y < layer->prev_layer_size; y++) {
-            input_sum[i] += input[y] * layer->weights[i][y] + layer->bias * layer->bias_weights[i];
+            input_sum[i] += input[y] * layer->weights[i][y] +
+                            layer->bias * layer->bias_weights[i];
         }
     }
     /* printf("Sum of the inputs : "); */
