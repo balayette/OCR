@@ -30,7 +30,7 @@ imgprocessing: $(IMGOBJ) $(MISCOBJ)
 
 .PHONY: doc
 doc:
-	doxygen doxyconfig
+	doxygen doc/doxyconfig
 	+$(MAKE) -C doc/latex/
 	cp doc/latex/refman.pdf doc/documentation.pdf
 	rm -rf doc/latex
