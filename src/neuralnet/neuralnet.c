@@ -4,15 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-t_neural_net *create_nn(const int input_count, const int hidden_layer_count,
+struct neural_net *create_nn(const int input_count, const int hidden_layer_count,
                         const int neuron_count, const int output_count) {
-    t_neural_net *nn = malloc(sizeof(t_neural_net));
+    struct neural_net *nn = malloc(sizeof(struct neural_net));
     nn->input_count = input_count;
     nn->hidden_layer_count = hidden_layer_count;
     nn->neuron_count = neuron_count;
     nn->output_count = output_count;
     nn->bias = 1;
-    t_layer **layers = malloc(sizeof(t_layer *) * (hidden_layer_count + 2));
+    struct layer **layers = malloc(sizeof(struct layer *) * (hidden_layer_count + 2));
     layers[0] = create_layer(0, input_count, false, NULL, false, nn->bias);
     int prev = input_count;
     for (int i = 0; i < hidden_layer_count; i++) {
@@ -25,16 +25,16 @@ t_neural_net *create_nn(const int input_count, const int hidden_layer_count,
     return nn;
 }
 
-void free_nn(t_neural_net *nn) {
+void free_nn(struct neural_net *nn) {
     for (int i = 0; i < nn->hidden_layer_count + 2; i++) {
-        /* printf("Freeing the %dth layer\n", i); */
+        printf("Freeing the %dth layer\n", i);
         free_layer(nn->layers[i]);
     }
     free(nn->layers);
     free(nn);
 }
 
-void print_nn(const t_neural_net *nn) {
+void print_nn(struct neural_net *nn) {
     for (int i = 0; i <= nn->hidden_layer_count; i++) {
         printf("Neuron layer %d\n", i);
         for (int y = 0; y < nn->layers[i + 1]->neuron_count; y++) {
@@ -48,7 +48,7 @@ void print_nn(const t_neural_net *nn) {
     }
 }
 
-void forward_prop(t_neural_net *nn, double *input) {
+void forward_prop(struct neural_net *nn, double *input) {
     double *prev_output = input;
     /* printf("Starting forward propagation\n"); */
     for (int i = 0; i <= nn->hidden_layer_count; i++) {
@@ -59,10 +59,10 @@ void forward_prop(t_neural_net *nn, double *input) {
 
 double error(double *expected, double *result) { return *expected - *result; }
 
-void back_prop(t_neural_net *nn, double *expected, double *input) {
+void back_prop(struct neural_net *nn, double *expected, double *input) {
     // We assume that the neural network only has 1 hidden layer
     // (For now)
-    t_layer *output_layer = nn->layers[nn->hidden_layer_count + 1];
+    struct layer *output_layer = nn->layers[nn->hidden_layer_count + 1];
     for (int i = 0; i < nn->output_count; i++) {
         // We are iterating over the nodes of the output layer
 
@@ -74,7 +74,7 @@ void back_prop(t_neural_net *nn, double *expected, double *input) {
         output_layer->deltas[i] = sigmoid_deriv(output_layer->values[i]) * err;
     }
 
-    t_layer *hidden_layer = nn->layers[1];
+    struct layer *hidden_layer = nn->layers[1];
     for (int i = 0; i < hidden_layer->neuron_count; i++) {
         // We are iterating over the nodes of the hidden layers
 
@@ -109,7 +109,7 @@ void back_prop(t_neural_net *nn, double *expected, double *input) {
         output_layer->bias_weights[neuron] += output_layer->deltas[neuron];
     }
 
-    t_layer *input_layer = nn->layers[0];
+    struct layer *input_layer = nn->layers[0];
 
     for (int neuron = 0; neuron < hidden_layer->neuron_count; neuron++) {
         // iterating over the weights of the hidden layer
