@@ -31,7 +31,7 @@
   neuron before the application of the sigmoid function.
 
 */
-typedef struct s_layer {
+struct layer {
     int neuron_count;
     int prev_layer_size;
     bool output_layer;
@@ -41,16 +41,16 @@ typedef struct s_layer {
     double *deltas;
     double *bias_weights;
     double bias;
-} t_layer;
+};
 
 // Random weights will be used if random_weigths is set to true.
 // Otherwise, **weights will be used.
-t_layer *create_layer(const int prev_layer_size, const int neuron_count,
+struct layer *create_layer(const int prev_layer_size, const int neuron_count,
                       const bool random_weights, double **weights,
                       const bool output_layer, double bias);
 
-void process_input(t_layer *layer, double *input);
+void process_input(struct layer *layer, double *input);
 
-void free_layer(t_layer *layer);
+void free_layer(struct layer *layer);
 
 #endif

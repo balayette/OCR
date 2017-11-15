@@ -4,8 +4,8 @@
 #include "neuralnet.h"
 #include <stdio.h>
 
-void save_nn(t_neural_net *nn, char *path);
+void save_nn(struct neural_net *nn, char *path);
 
-t_neural_net * load_nn(char *path);
+struct neural_net *load_nn(char *path);
 
 #endif
