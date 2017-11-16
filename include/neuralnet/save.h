@@ -1,6 +1,6 @@
 /**
  * \file save.h
- * \brief header of save.c
+ * \brief Saving and loading a neural network
  */
 #ifndef SAVE_NN_H
 #define SAVE_NN_H

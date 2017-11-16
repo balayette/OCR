@@ -27,7 +27,7 @@ struct neural_net {
 };
 
 /**
- * \bief Create a neural network
+ * \brief Create a neural network
  * \param input_count Number of inputs
  * \param hidden_layer_count Number of hidden layers
  * \param neuron_count Number of neurons in the hidden layers

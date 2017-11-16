@@ -1,9 +1,16 @@
+/**
+ * \file rxy_bintree.h
+ * \brief Binary tree implementation for the RXY algorithm
+ */
 #ifndef RXY_BINTREE_H
 #define RXY_BINTREE_H
 
 #include "misc/bool_matrix.h"
 #include <SDL/SDL.h>
 
+/**
+ * \brief Structure of the rxy_bintree
+ */
 struct rxy_bintree {
     int x;
     int y;
@@ -14,6 +21,9 @@ struct rxy_bintree {
 
 enum PRINT_POSITION { PREORDER, INORDER, POSTORDER };
 
+/**
+ * \brief Create a rxy_bintree
+ * \param value Pointer to matrix of booleans
 struct rxy_bintree *create_rxy_bintree(t_bool_matrix *value, int x, int y);
 
 int bcount(struct rxy_bintree *b);
