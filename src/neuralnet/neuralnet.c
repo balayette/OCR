@@ -1,3 +1,7 @@
+/**
+ * \file neuralnet.c
+ * \brief Implementation of neuralnet.h
+ */
 #include "neuralnet/neuralnet.h"
 #include "neuralnet/layer.h"
 #include "misc/utils.h"
