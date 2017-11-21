@@ -24,6 +24,7 @@ enum PRINT_POSITION { PREORDER, INORDER, POSTORDER };
 /**
  * \brief Create a rxy_bintree
  * \param value Pointer to matrix of booleans
+ * */
 struct rxy_bintree *create_rxy_bintree(t_bool_matrix *value, int x, int y);
 
 int bcount(struct rxy_bintree *b);

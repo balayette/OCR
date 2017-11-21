@@ -8,6 +8,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <stdbool.h>
+#include <SDL/SDL_ttf.h>
 
 void aol(struct rxy_bintree *b){
     _recxy_only_v(b, 1);

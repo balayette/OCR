@@ -12,6 +12,9 @@ IMGOBJ=$(IMGSRC:.c=.o)
 MISCSRC=$(wildcard src/misc/*.c)
 MISCOBJ=$(MISCSRC:.c=.o)
 
+GENSRC=$(wildcard src/generate/*.c)
+GENOBJ=$(GENSRC:.c=.o)
+
 opti: CFLAGS += -O3
 opti: all
 
@@ -23,8 +26,8 @@ all: neuralnet imgprocessing
 neuralnet: $(NNOBJ) $(MISCOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
 
-imgprocessing: CPPFLAGS += `pkg-config --cflags sdl` -MMD
-imgprocessing: LDLIBS += `pkg-config --libs sdl` -lSDL_image
+imgprocessing: CPPFLAGS += `pkg-config --cflags sdl`
+imgprocessing: LDLIBS += `pkg-config --libs SDL_image`
 imgprocessing: $(IMGOBJ) $(MISCOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
 
@@ -46,3 +49,5 @@ clean:
 	rm -f $(NNSRC:.c=.d)
 	rm -f $(IMGSRC:.c=.d)
 	rm -f $(MISCSRC:.c=.d)
+	rm -f $(GENOBJ)
+	rm -f $(GENOBJ:.o=.d)
