@@ -9,4 +9,6 @@ INIT_MATRIX_HEADER(bool)
 
 void disp_bool_matrix(t_bool_matrix *mat);
 
+void save_bool_matrix(char *path, t_bool_matrix *mat);
+
 #endif

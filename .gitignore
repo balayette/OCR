@@ -1,6 +1,8 @@
 *.d
 *.o
 *.swp
+*.bmp
+*.bin
 nn.save
 doc/html
 doc/latex

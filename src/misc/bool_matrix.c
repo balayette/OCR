@@ -12,3 +12,9 @@ void disp_bool_matrix(t_bool_matrix *mat){
         printf("|\n");
     }
 }
+
+void save_bool_matrix(char *path, t_bool_matrix *mat) {
+    FILE *f = fopen(path, "wb+");
+    fwrite(mat->values, sizeof(bool), mat->lines * mat->cols, f);
+    fclose(f);
+}

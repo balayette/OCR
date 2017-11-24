@@ -1,7 +1,10 @@
-CFLAGS= -Wall -Wextra -pedantic -std=c99 -Werror -Iinclude/
+CFLAGS= -Wall -Wextra -pedantic -std=c99 -Werror -Iinclude/ -g
 CPPFLAGS=
 LDLIBS=-lm
 LDFLAGS=
+
+MATRIXSRC=$(wildcard src/matrix/*.c)
+MATRIXOBJ=$(MATRIXSRC:.c=.o)
 
 NNSRC=$(wildcard src/neuralnet/*.c)
 NNOBJ=$(NNSRC:.c=.o)
@@ -15,7 +18,6 @@ MISCOBJ=$(MISCSRC:.c=.o)
 GENSRC=$(wildcard src/generate/*.c)
 GENOBJ=$(GENSRC:.c=.o)
 
-opti: CFLAGS += -O3
 opti: all
 
 debug: CFLAGS += -g
@@ -28,8 +30,15 @@ neuralnet: $(NNOBJ) $(MISCOBJ)
 
 imgprocessing: CPPFLAGS += `pkg-config --cflags sdl`
 imgprocessing: LDLIBS += `pkg-config --libs SDL_image`
-imgprocessing: $(IMGOBJ) $(MISCOBJ)
+imgprocessing: $(IMGOBJ) $(MISCOBJ) $(MATRIXOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
+
+
+generate: CPPFLAGS += `pkg-config --cflags SDL_ttf SDL_image`
+generate: LDLIBS += `pkg-config --libs SDL_ttf SDL_image`
+generate: $(GENOBJ) $(MISCOBJ) $(IMGOBJ) $(MATRIXOBJ)
+	$(LINK.o) $^ -o $@ $(LDLIBS)
+
 
 .PHONY: doc
 doc:
@@ -46,8 +55,5 @@ clean:
 	rm -f $(NNOBJ)
 	rm -f $(IMGOBJ)
 	rm -f $(MISCOBJ)
-	rm -f $(NNSRC:.c=.d)
-	rm -f $(IMGSRC:.c=.d)
-	rm -f $(MISCSRC:.c=.d)
 	rm -f $(GENOBJ)
-	rm -f $(GENOBJ:.o=.d)
+	rm -f $(MATRIXOBJ)
