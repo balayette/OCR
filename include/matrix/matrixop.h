@@ -49,6 +49,12 @@ t_bool_matrix *surface_to_matrix(SDL_Surface *img);
 
 t_bool_matrix *_trim_cols_before(t_bool_matrix *mat);
 
+t_bool_matrix *_trim_cols_after(t_bool_matrix *mat);
+
 t_bool_matrix *_trim_lines_before(t_bool_matrix *mat);
+
+t_bool_matrix *_trim_lines_after(t_bool_matrix *mat);
+
+t_bool_matrix *trim_cols(t_bool_matrix *mat);
 
 #endif

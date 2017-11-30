@@ -57,3 +57,4 @@ clean:
 	rm -f $(MISCOBJ)
 	rm -f $(GENOBJ)
 	rm -f $(MATRIXOBJ)
+	rm -f ./generate

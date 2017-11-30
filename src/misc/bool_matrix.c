@@ -14,7 +14,28 @@ void disp_bool_matrix(t_bool_matrix *mat){
 }
 
 void save_bool_matrix(char *path, t_bool_matrix *mat) {
-    FILE *f = fopen(path, "wb+");
+    FILE *f = fopen(path, "wb");
+    if(!f){
+        printf("Couldn't open the file to save the bool matrix\n");
+        exit(1);
+    }
+    fwrite(&mat->lines, sizeof(int), 1, f);
+    fwrite(&mat->cols, sizeof(int), 1, f);
     fwrite(mat->values, sizeof(bool), mat->lines * mat->cols, f);
     fclose(f);
+}
+
+t_bool_matrix *load_bool_matrix(char *path){
+    FILE *f = fopen(path, "rb");
+    if(!f){
+        printf("Couldn't open the file to read the bool matrix\n");
+        exit(1);
+    }
+    t_bool_matrix *mat = malloc(sizeof(t_bool_matrix));
+    fread(&mat->lines, sizeof(int), 1, f);
+    fread(&mat->cols, sizeof(int), 1, f);
+    mat->values = malloc(sizeof(bool) * mat->lines * mat->cols);
+    fread(mat->values, sizeof(bool), mat->cols * mat->lines, f);
+    fclose(f);
+    return mat;
 }

@@ -104,6 +104,26 @@ t_bool_matrix *rlsa_bm(t_bool_matrix *img, int c, t_bool_matrix **h, t_bool_matr
     return recombine_bm(*h, *v);
 }
 
+t_bool_matrix *_trim_cols_after(t_bool_matrix *mat){
+    if(!mat)
+        return NULL;
+    int x = mat->cols - 1;
+
+    for(; x > 0;){
+        if(!is_white_col(mat, x--))
+            break;
+    }
+    if(x == 0 || x == mat->cols - 1)
+        return NULL;
+
+    t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines, x);
+    for(int y = 0; y < mat->lines; y++){
+        for(int i = 0; i < x; i++){
+            M_bool_SET(ret, i, y, M_bool_GET(mat, i, y));
+        }
+    }
+    return ret;
+}
 
 t_bool_matrix *_trim_cols_before(t_bool_matrix *mat){
     if(!mat)
@@ -118,7 +138,7 @@ t_bool_matrix *_trim_cols_before(t_bool_matrix *mat){
     }
     t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines, mat->cols - x);
     for(int y = 0; y < mat->lines; y++){
-        for(int i = x; i < mat->cols; i++){
+        for(int i = x + 1; i < mat->cols; i++){
             M_bool_SET(ret, i - x, y, M_bool_GET(mat, i, y));
         }
     }
@@ -149,14 +169,11 @@ t_bool_matrix *_trim_lines_before(t_bool_matrix *mat){
 t_bool_matrix *_trim_lines_after(t_bool_matrix *mat){
     if(!mat)
         return NULL;
-
     int y = mat->lines - 1;
     for(; y >= 0; y--){
-        printf("Checking line %d\n", y);
         if(!is_white_line(mat, y))
             break;
     }
-    printf("First line with black is %d\n", y);
     if(y == mat->lines || y == 0)
         return NULL;
 
@@ -173,7 +190,7 @@ t_bool_matrix *trim_lines(t_bool_matrix *mat){
     if(!mat){
         return NULL;
     }
-    t_bool_matrix *before = _trim_cols_before(mat);
+    t_bool_matrix *before = _trim_lines_before(mat);
     if(!before){
         return NULL;
     }
@@ -181,6 +198,17 @@ t_bool_matrix *trim_lines(t_bool_matrix *mat){
 
     M_bool_FREE(before);
 
+    return after;
+}
+
+t_bool_matrix *trim_cols(t_bool_matrix *mat){
+    if(!mat)
+        return NULL;
+    t_bool_matrix *before = _trim_cols_before(mat);
+    if(!before)
+        return NULL;
+    t_bool_matrix *after = _trim_cols_after(before);
+    M_bool_FREE(before);
     return after;
 }
 
