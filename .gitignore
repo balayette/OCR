@@ -7,3 +7,6 @@ nn.save
 doc/html
 doc/latex
 doc/documentation.pdf
+build/neuralnet
+build/generate
+build/imgprocessing
