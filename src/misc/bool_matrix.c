@@ -29,7 +29,7 @@ t_bool_matrix *load_bool_matrix(char *path){
     FILE *f = fopen(path, "rb");
     if(!f){
         printf("Couldn't open the file to read the bool matrix\n");
-        exit(1);
+        return NULL;
     }
     t_bool_matrix *mat = malloc(sizeof(t_bool_matrix));
     fread(&mat->lines, sizeof(int), 1, f);

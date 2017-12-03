@@ -23,14 +23,14 @@ opti: all
 debug: CFLAGS += -g
 debug: all
 
-all: neuralnet imgprocessing
+all: build/neuralnet build/imgprocessing
 
-neuralnet: $(NNOBJ) $(MISCOBJ)
+build/neuralnet: build/neuralnet.o $(NNOBJ) $(MISCOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
 
-imgprocessing: CPPFLAGS += `pkg-config --cflags sdl`
-imgprocessing: LDLIBS += `pkg-config --libs SDL_image`
-imgprocessing: $(IMGOBJ) $(MISCOBJ) $(MATRIXOBJ)
+build/imgprocessing: CPPFLAGS += `pkg-config --cflags sdl`
+build/imgprocessing: LDLIBS += `pkg-config --libs SDL_image`
+build/imgprocessing: build/imgprocessing.o $(IMGOBJ) $(MISCOBJ) $(MATRIXOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
 
 
@@ -49,8 +49,9 @@ doc:
 	rm -rf doc/html
 
 clean:
-	rm -f ./neuralnet
-	rm -f ./imgprocessing
+	rm -f ./build/*.o
+	rm -f ./build/neuralnet
+	rm -f ./build/imgprocessing
 	rm -f nn.save
 	rm -f $(NNOBJ)
 	rm -f $(IMGOBJ)
