@@ -46,6 +46,10 @@ double sigmoid(double a);
  */
 double sigmoid_deriv(double a);
 
+void softmax(double *weighted_inputs, double *arr, int size);
+
+double softmax_deriv(double a);
+
 /**
  * \brief Print an array of double
  * \param arr Double array
@@ -58,7 +62,7 @@ void print_double_arr(double *arr, const int count);
  * \param a1 Double array
  * \param size1 Size of a1
  * \param a2 Double array
- * \param size2 size of a2 
+ * \param size2 size of a2
  * \return true if all the values and sizes are the same.
  */
 bool cmp_double_array(const double *a1, const int size1, const double *a2, const int size2);

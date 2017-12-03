@@ -1,4 +1,4 @@
-CFLAGS= -Wall -Wextra -pedantic -std=c99 -Werror -Iinclude/ -g
+CFLAGS= -Wall -Wextra -pedantic -std=c99 -Werror -Iinclude/
 CPPFLAGS=
 LDLIBS=-lm
 LDFLAGS=
@@ -18,6 +18,7 @@ MISCOBJ=$(MISCSRC:.c=.o)
 GENSRC=$(wildcard src/generate/*.c)
 GENOBJ=$(GENSRC:.c=.o)
 
+opti: CFLAGS += -O3
 opti: all
 
 debug: CFLAGS += -g

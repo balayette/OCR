@@ -55,10 +55,11 @@ void print_nn(struct neural_net *nn) {
 void forward_prop(struct neural_net *nn, double *input) {
     double *prev_output = input;
     /* printf("Starting forward propagation\n"); */
-    for (int i = 0; i <= nn->hidden_layer_count; i++) {
+    for (int i = 0; i < nn->hidden_layer_count; i++) {
         process_input(nn->layers[i + 1], prev_output);
         prev_output = nn->layers[i + 1]->values;
     }
+    process_last_input(nn->layers[nn->hidden_layer_count + 1], prev_output);
 }
 
 double error(double *expected, double *result) { return *expected - *result; }
@@ -75,7 +76,8 @@ void back_prop(struct neural_net *nn, double *expected, double *input) {
         // The delta of a node is equal to the derivative of the activation
         // function of the output of the node * the error of the node
 
-        output_layer->deltas[i] = sigmoid_deriv(output_layer->values[i]) * err;
+        /* output_layer->deltas[i] = sigmoid_deriv(output_layer->values[i]) * err; */
+        output_layer->deltas[i] = softmax_deriv(output_layer->values[i]) * err;
     }
 
     struct layer *hidden_layer = nn->layers[1];
@@ -87,7 +89,8 @@ void back_prop(struct neural_net *nn, double *expected, double *input) {
         // delta * weight from the neuron to the output neuron, for all
         // neurons of the output layer
 
-        double deriv = sigmoid_deriv(hidden_layer->values[i]);
+        /* double deriv = sigmoid_deriv(hidden_layer->values[i]); */
+        double deriv = softmax_deriv(hidden_layer->values[i]);
         double sum = 0;
         for (int k = 0; k < output_layer->neuron_count; k++) {
             // weights[k][i] is the weigth from the hidden neuron i to the

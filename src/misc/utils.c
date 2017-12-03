@@ -45,6 +45,24 @@ double sigmoid(double a) { return (1 / (1 + exp(-a))); }
 
 double sigmoid_deriv(double a) { return a * (1 - a); }
 
+void softmax(double *weighted_inputs, double *arr, int size){
+    double w_sum = 0;
+    for(int i = 0; i < size; i++)
+        w_sum += exp(weighted_inputs[i]);
+    if(w_sum == 0)
+        w_sum = 1;
+    for(int i = 0; i < size; i++){
+        arr[i] = exp(weighted_inputs[i]) / w_sum;
+    }
+    /* printf("Activations :"); */
+    /* print_double_arr(arr, size); */
+}
+
+double softmax_deriv(double a){
+    (void)a;
+    return 1.0;
+}
+
 bool cmp_double_array(const double *a1, const int size1, const double *a2, const int size2){
     if(size1 != size2)
         return false;

@@ -16,8 +16,8 @@ void disp_bool_matrix(t_bool_matrix *mat){
 void save_bool_matrix(char *path, t_bool_matrix *mat) {
     FILE *f = fopen(path, "wb");
     if(!f){
-        printf("Couldn't open the file to save the bool matrix\n");
-        exit(1);
+        printf("Couldn't open %s to save the bool matrix\n", path);
+        exit(0);
     }
     fwrite(&mat->lines, sizeof(int), 1, f);
     fwrite(&mat->cols, sizeof(int), 1, f);
@@ -28,7 +28,7 @@ void save_bool_matrix(char *path, t_bool_matrix *mat) {
 t_bool_matrix *load_bool_matrix(char *path){
     FILE *f = fopen(path, "rb");
     if(!f){
-        printf("Couldn't open the file to read the bool matrix\n");
+        printf("Couldn't open %s to read the bool matrix\n", path);
         return NULL;
     }
     t_bool_matrix *mat = malloc(sizeof(t_bool_matrix));
