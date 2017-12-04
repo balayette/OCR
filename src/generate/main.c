@@ -1,4 +1,5 @@
 #include "imgprocessing/pixop.h"
+#include <dirent.h>
 #include "misc/bool_matrix.h"
 #include <stdio.h>
 #include <stdbool.h>
@@ -32,7 +33,7 @@ void do_letter(SDL_Surface *surf, TTF_Font *font, char *path, int index, char l)
     M_bool_FREE(mat);
     M_bool_FREE(triml);
     path[index] = l;
-    printf("%d - %d\n", trimc->lines, trimc->cols);
+    printf("         %s\n", path);
     save_bool_matrix(path, trimc);
     M_bool_FREE(trimc);
     SDL_FreeSurface(surf);
@@ -47,16 +48,75 @@ void generate(char *font, char *path, int index){
     TTF_CloseFont(f);
 }
 
-int main(){
+int main(int argc, char *argv[]){
+    if(argc < 3){
+        printf("./generate FONTS_PATH OUTPUT_PATH\n");
+        exit(1);
+    }
     init_sdl();
     TTF_Init();
-    char *path = calloc(15, sizeof(char));
-    strcat(path, "res/data/#.bin");
-    generate("res/fonts/arial.ttf", path, 9);
+    char *output_path = calloc(200, sizeof(char));
+    char *fonts_path = calloc(200, sizeof(char));
+    strcat(output_path, argv[2]);
+    strcat(fonts_path, argv[1]);
+    int lenoutput = strlen(output_path);
+    int lenfonts = strlen(fonts_path);
+    if(output_path[lenoutput - 1] != '/'){
+        output_path[lenoutput++] = '/';
+    }
+    if(fonts_path[lenfonts - 1] != '/'){
+        fonts_path[lenfonts++] = '/';
+    }
+    printf("Fonts path : %s\n", fonts_path);
+    printf("Output path : %s\n", output_path);
+
+    DIR *d;
+    struct dirent *dir;
+    d = opendir(fonts_path);
+    if(!d)
+    {
+        printf("Couldn't open the fonts path\n");
+        exit(1);
+    }
+
+    char *indiv_font_path = calloc(200, sizeof(char));
+    char *indiv_output_path = calloc(200, sizeof(char));
+    memcpy(indiv_font_path, fonts_path, lenfonts);
+    memcpy(indiv_output_path, output_path, lenoutput);
+    while((dir = readdir(d)) != NULL){
+        if(dir->d_type == DT_REG){
+            strcpy(indiv_font_path + lenfonts, dir->d_name);
+
+            strcpy(indiv_output_path + lenoutput, dir->d_name);
+            strcpy(indiv_output_path + lenoutput + strlen(dir->d_name) - 4, ".*");
+            int index = strlen(indiv_output_path) - 1;
+
+            printf("Found font %s\n", indiv_font_path);
+            printf("    Outputing to %s\n", indiv_output_path);
+            generate(indiv_font_path, indiv_output_path, index);
+        }
+    }
+
+    /* DIR *d; */
+    /* struct dirent *dir; */
+    /* d = opendir("res/fonts"); */
+    /* if(!d) */
+    /* { */
+    /*     printf("Couldn't open the fonts\n"); */
+    /*     exit(1); */
+    /* } */
+    /* while((dir = readdir(d)) != NULL) */
+    /*     if(dir->d_type == DT_REG){ */
+    /*         printf("%s\n", dir->d_name); */
+    /*         generate(dir->d_name, output_path, 9); */
+    /*     } */
+
+    /* closedir(d); */
 
     TTF_Quit();
     SDL_Quit();
-    free(path);
+    free(output_path);
+    free(fonts_path);
 
     return 0;
 }
