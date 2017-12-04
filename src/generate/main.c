@@ -9,6 +9,9 @@
 #include "matrix/matrixop.h"
 #include <string.h>
 
+static const char TOKENS[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+static const int TOKENS_LEN = 62;
+
 SDL_Surface *new_surface(int h, int w) {
     return SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
 }
@@ -38,9 +41,8 @@ void do_letter(SDL_Surface *surf, TTF_Font *font, char *path, int index, char l)
 void generate(char *font, char *path, int index){
     SDL_Surface *letter = NULL;
     TTF_Font *f = TTF_OpenFont(font, 30);
-    for(char l = 'A'; l <= 'Z'; l++){
-        do_letter(letter, f, path, index, l);
-        do_letter(letter, f, path, index, l + 26 + 6);
+    for(int i = 0; i < TOKENS_LEN; i++){
+        do_letter(letter, f, path, index, TOKENS[i]);
     }
     TTF_CloseFont(f);
 }
