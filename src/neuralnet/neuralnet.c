@@ -31,7 +31,6 @@ struct neural_net *create_nn(const int input_count, const int hidden_layer_count
 
 void free_nn(struct neural_net *nn) {
     for (int i = 0; i < nn->hidden_layer_count + 2; i++) {
-        printf("Freeing the %dth layer\n", i);
         free_layer(nn->layers[i]);
     }
     free(nn->layers);

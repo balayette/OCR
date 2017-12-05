@@ -5,12 +5,8 @@
 #include <string.h>
 
 void free_layer(struct layer *layer) {
-    printf("Freeing a layer at address %p\n", (void *)layer);
     if (layer->weights) {
-        printf("Freeing weights at address %p\n", (void *)layer->weights);
         for (int i = 0; i < layer->neuron_count; i++) {
-            printf("Freeing weitgh %d at address %p\n", i,
-                   (void *)*(layer->weights + i));
             free(layer->weights[i]);
         }
     }
