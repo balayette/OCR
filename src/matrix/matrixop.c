@@ -1,4 +1,5 @@
 #include "misc/bool_matrix.h"
+#include <math.h>
 #include <string.h>
 #include <SDL/SDL.h>
 #include "imgprocessing/pixop.h"
@@ -214,8 +215,6 @@ t_bool_matrix *trim_cols(t_bool_matrix *mat){
     if(!before)
         return NULL;
     t_bool_matrix *after = _trim_cols_after(before);
-    printf("%d cols\n", after->cols);
-    pprint_bool_matrix(after);
 
     if(after->cols == 1){
         t_bool_matrix *bound = CREATE_bool_MATRIX(after->lines, 5);
@@ -351,4 +350,23 @@ int find_h_cut(t_bool_matrix *mat, int span) {
             return y;
     }
     return -1;
+}
+
+// http://tech-algorithm.com/articles/nearest-neighbor-image-scaling
+t_bool_matrix *scale(t_bool_matrix *mat, int nh, int nw){
+    t_bool_matrix *ret = CREATE_bool_MATRIX(nh, nw);
+    double hratio = (double)mat->cols / (double)nw;
+    double vratio = (double)mat->lines / (double)nh;
+
+    double px, py;
+
+    for(int y = 0; y < nh; y++)
+    {
+        for(int x = 0; x < nw; x++){
+            px = floor(x * hratio);
+            py = floor(y * vratio);
+            M_bool_SET(ret, x, y, M_bool_GET(mat, (int)px, (int)py));
+        }
+    }
+    return ret;
 }

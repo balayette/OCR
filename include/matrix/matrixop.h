@@ -59,4 +59,5 @@ t_bool_matrix *trim_cols(t_bool_matrix *mat);
 
 t_bool_matrix *trim_all(t_bool_matrix *mat);
 
+t_bool_matrix *scale(t_bool_matrix *mat, int nh, int nw);
 #endif

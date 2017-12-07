@@ -14,24 +14,6 @@
 static const char TOKENS[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 static const int TOKENS_LEN = 62;
 
-// http://tech-algorithm.com/articles/nearest-neighbor-image-scaling
-t_bool_matrix *scale(t_bool_matrix *mat, int nh, int nw){
-    t_bool_matrix *ret = CREATE_bool_MATRIX(nh, nw);
-    double hratio = (double)mat->cols / (double)nw;
-    double vratio = (double)mat->lines / (double)nh;
-
-    double px, py;
-
-    for(int y = 0; y < nh; y++)
-    {
-        for(int x = 0; x < nw; x++){
-            px = floor(x * hratio);
-            py = floor(y * vratio);
-            M_bool_SET(ret, x, y, M_bool_GET(mat, (int)px, (int)py));
-        }
-    }
-    return ret;
-}
 
 SDL_Surface *new_surface(int h, int w) {
     return SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
