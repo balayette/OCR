@@ -243,13 +243,20 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+    struct neural_net *nn;
+    printf("%d\n", argc);
+    if (argc == 3) {
+        nn = create_nn(625, 1, 20, TOKENS_LEN);
+    } else {
+        printf("Loading\n");
+        nn = load_nn(argv[3]);
+    }
     char *path = calloc(200, sizeof(char));
     strcat(path, argv[1]);
     struct dataset *ds = load_dataset(path);
     struct cache *c = cache_from_dataset(ds);
 
     int reps = atoi(argv[2]);
-    struct neural_net *nn = create_nn(625, 1, 20, TOKENS_LEN);
     /* struct neural_net *nn = load_nn("save.nn"); */
 
     for (int BIGREP = 1; BIGREP <= 1000; BIGREP++) {
