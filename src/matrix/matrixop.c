@@ -8,12 +8,18 @@
 // Makes it possible to use binary logic and speeds up the RLSA
 t_bool_matrix *surface_to_matrix(SDL_Surface *img){
     t_bool_matrix *ret = CREATE_bool_MATRIX(img->h, img->w);
-    Uint8 r;
-    for(int i = 0; i < img->h; i++){
-        for(int j = 0; j < img->w; j++)
+    int count = 0;
+    Uint8 r, g, b, a;
+    for(int y = 0; y < img->h; y++){
+        for(int x = 0; x < img->w; x++)
         {
-            SDL_GetRGB(getpixel(img, j, i), img->format, &r, &r, &r);
-            M_bool_SET(ret, j, i, !r);
+            SDL_GetRGBA(getpixel(img, x, y), img->format, &r, &g, &b, &a);
+            if(r == 0 && g == 0 && b == 0){
+                M_bool_SET(ret, x, y, true);
+                count++;
+            }
+            else
+                M_bool_SET(ret, x, y, false);
         }
     }
     return ret;
@@ -23,11 +29,11 @@ void matrix_to_surface(SDL_Surface *surface, t_bool_matrix *m){
     for(int y = 0; y < m->lines; y++){
         for(int x = 0; x < m->cols; x++){
             int val = M_bool_GET(m, x, y) ? 0 : 255;
-            /* printf("%d\n", val); */
             putpixel(surface, x, y, SDL_MapRGB(surface->format, val, val, val));
         }
     }
 }
+
 t_bool_matrix *hrlsa_bm(t_bool_matrix *img, int c){
     t_bool_matrix *copy = CREATE_bool_MATRIX(img->lines, img->cols);
     memcpy(copy->values, img->values, img->lines * img->cols);
@@ -109,16 +115,16 @@ t_bool_matrix *_trim_cols_after(t_bool_matrix *mat){
         return NULL;
     int x = mat->cols - 1;
 
-    for(; x > 0;){
-        if(!is_white_col(mat, x--))
+    for(; x > 0; x--){
+        if(!is_white_col(mat, x))
             break;
     }
-    if(x == 0 || x == mat->cols - 1)
+    if(x < 0)
         return NULL;
 
-    t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines, x);
+    t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines, x + 1);
     for(int y = 0; y < mat->lines; y++){
-        for(int i = 0; i < x; i++){
+        for(int i = 0; i <= x ; i++){
             M_bool_SET(ret, i, y, M_bool_GET(mat, i, y));
         }
     }
@@ -133,12 +139,12 @@ t_bool_matrix *_trim_cols_before(t_bool_matrix *mat){
         if(!is_white_col(mat, x))
             break;
     }
-    if(x == 0 || x == mat->cols - 1){
+    if(x == mat->cols){
         return NULL;
     }
     t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines, mat->cols - x);
     for(int y = 0; y < mat->lines; y++){
-        for(int i = x + 1; i < mat->cols; i++){
+        for(int i = x; i < mat->cols; i++){
             M_bool_SET(ret, i - x, y, M_bool_GET(mat, i, y));
         }
     }
@@ -208,10 +214,34 @@ t_bool_matrix *trim_cols(t_bool_matrix *mat){
     if(!before)
         return NULL;
     t_bool_matrix *after = _trim_cols_after(before);
+    printf("%d cols\n", after->cols);
+    pprint_bool_matrix(after);
+
+    if(after->cols == 1){
+        t_bool_matrix *bound = CREATE_bool_MATRIX(after->lines, 5);
+        printf("Creating bounds\n");
+        for(int y = 0; y < after->lines; y++){
+            M_bool_SET(bound, 2, y, 1);
+        }
+        M_bool_FREE(after);
+        after = bound;
+    }
     M_bool_FREE(before);
     return after;
 }
 
+t_bool_matrix *trim_all(t_bool_matrix *mat){
+    if(!mat)
+        return NULL;
+    t_bool_matrix *triml = trim_lines(mat);
+    if(!triml)
+        return NULL;
+    t_bool_matrix *trimc = trim_cols(triml);
+    if(!trimc)
+        return NULL;
+    M_bool_FREE(triml);
+    return trimc;
+}
 
 // y included
 t_bool_matrix *before_h(t_bool_matrix *mat, int y) {

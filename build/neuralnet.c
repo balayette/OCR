@@ -2,6 +2,7 @@
 #include "neuralnet/neuralnet.h"
 #include "misc/bool_matrix.h"
 #include "misc/utils.h"
+#include "neuralnet/save.h"
 #include <dirent.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -248,17 +249,16 @@ int main(int argc, char *argv[]) {
     struct cache *c = cache_from_dataset(ds);
 
     int reps = atoi(argv[2]);
-    struct neural_net *nn = create_nn(625, 1, 15, TOKENS_LEN);
+    struct neural_net *nn = create_nn(625, 1, 20, TOKENS_LEN);
+    /* struct neural_net *nn = load_nn("save.nn"); */
 
     for (int BIGREP = 1; BIGREP <= 1000; BIGREP++) {
         printf("%d / %d\n", BIGREP * (reps / 1000), reps);
         for (int rep = 1; rep <= reps / 1000; rep++) {
             int k = rand() % TOKENS_LEN;
-            if (c->sizes[k]) {
-                for(int y = 0; y < c->sizes[k]; y++){
-                    forward_prop(nn, c->data[k][y]);
-                    back_prop(nn, c->output[k], c->data[k][y]);
-                }
+            for (int y = 0; y < c->sizes[k]; y++) {
+                forward_prop(nn, c->data[k][y]);
+                back_prop(nn, c->output[k], c->data[k][y]);
             }
         }
     }
@@ -272,6 +272,8 @@ int main(int argc, char *argv[]) {
                get_letter(nn->layers[nn->hidden_layer_count + 1]->values,
                           TOKENS_LEN));
     }
+
+    save_nn(nn, "save.nn");
 
     free_dataset(ds);
     free_cache(c);
