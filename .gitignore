@@ -1,7 +1,13 @@
 *.d
 *.o
 *.swp
+*.bmp
+*.bin
 nn.save
 doc/html
 doc/latex
 doc/documentation.pdf
+build/neuralnet
+build/generate
+build/imgprocessing
+res/data

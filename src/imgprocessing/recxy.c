@@ -3,120 +3,11 @@
 #include "imgprocessing/processing.h"
 #include "imgprocessing/recxy.h"
 #include "imgprocessing/rxy_bintree.h"
+#include "matrix/matrixop.h"
 #include "misc/bool_matrix.h"
 #include <SDL/SDL.h>
 #include <stdlib.h>
 
-
-bool is_white_col(t_bool_matrix *mat, int x) {
-    for (int i = 0; i < mat->lines; i++)
-        if (M_bool_GET(mat, x, i))
-            return false;
-    return true;
-}
-
-bool is_white_line(t_bool_matrix *mat, int y) {
-    for (int i = 0; i < mat->cols; i++)
-        if (M_bool_GET(mat, i, y))
-            return false;
-    return true;
-}
-
-bool is_white(t_bool_matrix *mat, int x, int y, int h, int w) {
-    int xend = x + w;
-    int yend = y + h;
-    for (int i = x; i < xend; i++) {
-        for (int j = 0; j < yend; j++) {
-            if (M_bool_GET(mat, i, j))
-                return false;
-        }
-    }
-    return true;
-}
-
-int find_v_cut(t_bool_matrix *mat, int span) {
-    bool black = false;
-    for (int x = 0; x < mat->cols; x++) {
-        if (!is_white_col(mat, x)) {
-            black = true;
-            continue;
-        }
-        int count = 1;
-        while (count < span && x + count < mat->cols) {
-            if (is_white_col(mat, x + count))
-                count++;
-            else
-                break;
-        }
-        if (!(count < span) && black)
-            return x;
-    }
-    return -1;
-}
-
-int find_h_cut(t_bool_matrix *mat, int span) {
-    bool black = false;
-    for (int y = 0; y < mat->lines; y++) {
-        if (!is_white_line(mat, y)) {
-            black = true;
-            continue;
-        }
-        int count = 1;
-        while (count < span && y + count < mat->lines) {
-            if (is_white_line(mat, y + count))
-                count++;
-            else
-                break;
-        }
-        if (!(count < span) && black)
-            return y;
-    }
-    return -1;
-}
-
-// y included
-t_bool_matrix *before_h(t_bool_matrix *mat, int y) {
-    t_bool_matrix *ret = CREATE_bool_MATRIX(y + 1, mat->cols);
-    for (int x = 0; x < mat->cols; x++) {
-        for (int j = 0; j <= y; j++) {
-            M_bool_SET(ret, x, j, M_bool_GET(mat, x, j));
-        }
-    }
-    return ret;
-}
-
-// y included
-t_bool_matrix *after_h(t_bool_matrix *mat, int y) {
-    t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines - y, mat->cols);
-    for (int x = 0; x < mat->cols; x++) {
-        for (int j = y; j < mat->lines; j++) {
-            M_bool_SET(ret, x, j - y, M_bool_GET(mat, x, j));
-        }
-    }
-    return ret;
-}
-
-// x included
-t_bool_matrix *before_v(t_bool_matrix *mat, int x) {
-    t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines, x + 1);
-    for (int i = 0; i <= x; i++) {
-        for (int y = 0; y < mat->lines; y++) {
-            M_bool_SET(ret, i, y, M_bool_GET(mat, i, y));
-        }
-    }
-    return ret;
-}
-
-// x included
-t_bool_matrix *after_v(t_bool_matrix *mat, int x) {
-    t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines, mat->cols - x);
-    for (int i = x; i < mat->cols; i++) {
-        for (int y = 0; y < mat->lines; y++) {
-            M_bool_SET(ret, i - x, y, M_bool_GET(mat, i, y));
-        }
-    }
-    return ret;
-}
 
 void _recxy(struct rxy_bintree *parent, bool h, int cut, bool endnext) {
     printf("recxy | h : %d\n", h);
@@ -227,46 +118,6 @@ void _recxy_only_h(struct rxy_bintree *parent, int cut) {
     _recxy_only_h(parent->right, cut);
 }
 
-t_bool_matrix *_trim_cols_before(t_bool_matrix *mat){
-    if(!mat)
-        return NULL;
-    int x = 0;
-    for(; x < mat->cols; x++){
-        if(!is_white_col(mat, x))
-            break;
-    }
-    if(x == 0 || x == mat->cols - 1){
-        return NULL;
-    }
-    t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines, mat->cols - x);
-    for(int y = 0; y < mat->lines; y++){
-        for(int i = x; i < mat->cols; i++){
-            M_bool_SET(ret, i - x, y, M_bool_GET(mat, i, y));
-        }
-    }
-    return ret;
-}
-
-t_bool_matrix *_trim_lines_before(t_bool_matrix *mat){
-    if(!mat){
-        return NULL;
-    }
-    int y = 0;
-    for(; y < mat->lines; y++){
-        if(!is_white_line(mat, y))
-            break;
-    }
-    if(y == 0 || y == mat->lines - 1){
-        return NULL;
-    }
-    t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines - y , mat->cols);
-    for(int x = 0; x < mat->cols; x++){
-        for(int j = y; j < mat->lines; j++){
-            M_bool_SET(ret, x, j - y, M_bool_GET(mat, x, j));
-        }
-    }
-    return ret;
-}
 
 void trim_white_cols(struct rxy_bintree *b){
     t_bool_matrix *new = _trim_cols_before(b->values);

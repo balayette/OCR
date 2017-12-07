@@ -66,6 +66,7 @@ struct layer *create_layer(const int prev_layer_size, const int neuron_count,
  * \param input Array of double, contains the input
  */
 void process_input(struct layer *layer, double *input);
+void process_last_input(struct layer *layer, double *input);
 
 /**
  * \brief Free all the resources used by a layer

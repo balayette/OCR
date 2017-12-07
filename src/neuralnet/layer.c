@@ -5,16 +5,13 @@
 #include <string.h>
 
 void free_layer(struct layer *layer) {
-  printf("Freeing a layer at address %p\n", (void *)layer);
     if (layer->weights) {
-      printf("Freeing weights at address %p\n", (void *)layer->weights);
         for (int i = 0; i < layer->neuron_count; i++) {
-            printf("Freeing weitgh %d at address %p\n", i,
-                   (void *)(layer->weights + i));
             free(layer->weights[i]);
         }
     }
     free(layer->weights);
+    free(layer->bias_weights);
     free(layer->hidden_values);
     free(layer->values);
     free(layer->deltas);
@@ -55,20 +52,32 @@ struct layer *create_layer(const int prev_layer_size, const int neuron_count,
     return layer;
 }
 
-void process_input(struct layer *layer, double *input) {
+void process_last_input(struct layer *layer, double *input) {
+    // This time, use the softmax function
     double *input_sum = calloc(layer->neuron_count, sizeof(double));
-    /* printf("\nProcessing the input in the layer\n"); */
     for (int i = 0; i < layer->neuron_count; i++) {
         for (int y = 0; y < layer->prev_layer_size; y++) {
             input_sum[i] += input[y] * layer->weights[i][y] +
                             layer->bias * layer->bias_weights[i];
         }
     }
-    /* printf("Sum of the inputs : "); */
-    /* print_double_arr(input_sum,layer->neuron_count); */
+    double *activations = malloc(sizeof(double) * layer->neuron_count);
+    softmax(input_sum, activations, layer->neuron_count);
+    free(layer->values);
+    free(layer->hidden_values);
+    layer->values = activations;
+    layer->hidden_values = input_sum;
+}
+
+void process_input(struct layer *layer, double *input) {
+    double *input_sum = calloc(layer->neuron_count, sizeof(double));
+    for (int i = 0; i < layer->neuron_count; i++) {
+        for (int y = 0; y < layer->prev_layer_size; y++) {
+            input_sum[i] += input[y] * layer->weights[i][y] +
+                            layer->bias * layer->bias_weights[i];
+        }
+    }
     double *sigmoid_sum = map(sigmoid, input_sum, layer->neuron_count);
-    /* printf("S(sum) : "); */
-    /* print_double_arr(sigmoid_sum, layer->neuron_count); */
     free(layer->values);
     free(layer->hidden_values);
     layer->values = sigmoid_sum;

@@ -3,6 +3,9 @@ CPPFLAGS=
 LDLIBS=-lm
 LDFLAGS=
 
+MATRIXSRC=$(wildcard src/matrix/*.c)
+MATRIXOBJ=$(MATRIXSRC:.c=.o)
+
 NNSRC=$(wildcard src/neuralnet/*.c)
 NNOBJ=$(NNSRC:.c=.o)
 
@@ -12,21 +15,31 @@ IMGOBJ=$(IMGSRC:.c=.o)
 MISCSRC=$(wildcard src/misc/*.c)
 MISCOBJ=$(MISCSRC:.c=.o)
 
+GENSRC=$(wildcard src/generate/*.c)
+GENOBJ=$(GENSRC:.c=.o)
+
 opti: CFLAGS += -O3
 opti: all
 
 debug: CFLAGS += -g
 debug: all
 
-all: neuralnet imgprocessing
+all: build/neuralnet build/imgprocessing
 
-neuralnet: $(NNOBJ) $(MISCOBJ)
+build/neuralnet: build/neuralnet.o $(NNOBJ) $(MISCOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
 
-imgprocessing: CPPFLAGS += `pkg-config --cflags sdl` -MMD
-imgprocessing: LDLIBS += `pkg-config --libs sdl` -lSDL_image
-imgprocessing: $(IMGOBJ) $(MISCOBJ)
+build/imgprocessing: CPPFLAGS += `pkg-config --cflags sdl`
+build/imgprocessing: LDLIBS += `pkg-config --libs SDL_image`
+build/imgprocessing: build/imgprocessing.o $(IMGOBJ) $(MISCOBJ) $(MATRIXOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
+
+
+generate: CPPFLAGS += `pkg-config --cflags SDL_ttf SDL_image`
+generate: LDLIBS += `pkg-config --libs SDL_ttf SDL_image`
+generate: $(GENOBJ) $(MISCOBJ) $(IMGOBJ) $(MATRIXOBJ)
+	$(LINK.o) $^ -o $@ $(LDLIBS)
+
 
 .PHONY: doc
 doc:
@@ -37,12 +50,13 @@ doc:
 	rm -rf doc/html
 
 clean:
-	rm -f ./neuralnet
-	rm -f ./imgprocessing
+	rm -f ./build/*.o
+	rm -f ./build/neuralnet
+	rm -f ./build/imgprocessing
 	rm -f nn.save
 	rm -f $(NNOBJ)
 	rm -f $(IMGOBJ)
 	rm -f $(MISCOBJ)
-	rm -f $(NNSRC:.c=.d)
-	rm -f $(IMGSRC:.c=.d)
-	rm -f $(MISCSRC:.c=.d)
+	rm -f $(GENOBJ)
+	rm -f $(MATRIXOBJ)
+	rm -f ./generate

@@ -1,10 +1,10 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #define INIT_MATRIX(Type)                                                      \
     t_##Type##_matrix *CREATE_##Type##_MATRIX(int lines, int cols) {           \
@@ -25,6 +25,8 @@
         m->values[x + y * m->cols] = value;                                    \
     }                                                                          \
     void M_##Type##_FREE(t_##Type##_matrix *m) {                               \
+        if (!m)                                                                \
+            return;                                                            \
         free(m->values);                                                       \
         free(m);                                                               \
     }

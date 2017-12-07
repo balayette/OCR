@@ -31,7 +31,6 @@ struct neural_net *create_nn(const int input_count, const int hidden_layer_count
 
 void free_nn(struct neural_net *nn) {
     for (int i = 0; i < nn->hidden_layer_count + 2; i++) {
-        printf("Freeing the %dth layer\n", i);
         free_layer(nn->layers[i]);
     }
     free(nn->layers);
@@ -55,10 +54,11 @@ void print_nn(struct neural_net *nn) {
 void forward_prop(struct neural_net *nn, double *input) {
     double *prev_output = input;
     /* printf("Starting forward propagation\n"); */
-    for (int i = 0; i <= nn->hidden_layer_count; i++) {
+    for (int i = 0; i < nn->hidden_layer_count; i++) {
         process_input(nn->layers[i + 1], prev_output);
         prev_output = nn->layers[i + 1]->values;
     }
+    process_last_input(nn->layers[nn->hidden_layer_count + 1], prev_output);
 }
 
 double error(double *expected, double *result) { return *expected - *result; }
@@ -75,7 +75,8 @@ void back_prop(struct neural_net *nn, double *expected, double *input) {
         // The delta of a node is equal to the derivative of the activation
         // function of the output of the node * the error of the node
 
-        output_layer->deltas[i] = sigmoid_deriv(output_layer->values[i]) * err;
+        /* output_layer->deltas[i] = sigmoid_deriv(output_layer->values[i]) * err; */
+        output_layer->deltas[i] = softmax_deriv(output_layer->values[i]) * err;
     }
 
     struct layer *hidden_layer = nn->layers[1];
@@ -87,7 +88,8 @@ void back_prop(struct neural_net *nn, double *expected, double *input) {
         // delta * weight from the neuron to the output neuron, for all
         // neurons of the output layer
 
-        double deriv = sigmoid_deriv(hidden_layer->values[i]);
+        /* double deriv = sigmoid_deriv(hidden_layer->values[i]); */
+        double deriv = softmax_deriv(hidden_layer->values[i]);
         double sum = 0;
         for (int k = 0; k < output_layer->neuron_count; k++) {
             // weights[k][i] is the weigth from the hidden neuron i to the
@@ -108,9 +110,9 @@ void back_prop(struct neural_net *nn, double *expected, double *input) {
         // iterating over the weights of the output layer
         for (int prev_n = 0; prev_n < hidden_layer->neuron_count; prev_n++) {
             output_layer->weights[neuron][prev_n] +=
-                output_layer->deltas[neuron] * hidden_layer->values[prev_n];
+                0.7 * output_layer->deltas[neuron] * hidden_layer->values[prev_n];
         }
-        output_layer->bias_weights[neuron] += output_layer->deltas[neuron];
+        output_layer->bias_weights[neuron] += 0.7 * output_layer->deltas[neuron];
     }
 
     struct layer *input_layer = nn->layers[0];
@@ -119,9 +121,9 @@ void back_prop(struct neural_net *nn, double *expected, double *input) {
         // iterating over the weights of the hidden layer
         for (int prev_n = 0; prev_n < input_layer->neuron_count; prev_n++) {
             hidden_layer->weights[neuron][prev_n] +=
-                hidden_layer->deltas[neuron] *
+                0.7 * hidden_layer->deltas[neuron] *
                 input[prev_n];
         }
-        hidden_layer->bias_weights[neuron] += hidden_layer->deltas[neuron];
+        hidden_layer->bias_weights[neuron] += 0.7 * hidden_layer->deltas[neuron];
     }
 }
