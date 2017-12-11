@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "imgprocessing/pixop.h"
 #include <time.h>
 #include <math.h>
@@ -173,21 +174,7 @@ int main(int argc, char *argv[]){
         }
     }
 
-    /* DIR *d; */
-    /* struct dirent *dir; */
-    /* d = opendir("res/fonts"); */
-    /* if(!d) */
-    /* { */
-    /*     printf("Couldn't open the fonts\n"); */
-    /*     exit(1); */
-    /* } */
-    /* while((dir = readdir(d)) != NULL) */
-    /*     if(dir->d_type == DT_REG){ */
-    /*         printf("%s\n", dir->d_name); */
-    /*         generate(dir->d_name, output_path, 9); */
-    /*     } */
-
-    /* closedir(d); */
+    closedir(d);
 
     TTF_Quit();
     SDL_Quit();

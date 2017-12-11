@@ -11,10 +11,11 @@
 
 #define H 35
 #define V 45
-#define SIZE H*V
+#define SIZE H *V
 
-static const char TOKENS[] =
-    "!\"#$%&'()*+,-.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+static const char TOKENS[] = "!\"#$%&'()*+,-."
+                             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW"
+                             "XYZ0123456789";
 static const int TOKENS_LEN = 73;
 static const int SYMBOL_OFFSET = 0;
 static const int LETTER_OFFSET = 14;
@@ -29,46 +30,8 @@ void mat_to_double(t_bool_matrix *mat, double *output) {
         output[i] = mat->values[i] ? 0.0 : 1.0;
 }
 
-/* void mat_to_double(t_bool_matrix *mat, double *output, int width, int height)
- * { */
-/*     int h_padding = width - mat->cols; */
-/*     int left_padding = h_padding / 2; */
-/*     int right_padding = h_padding - left_padding; */
-
-/*     int v_padding = height - mat->lines; */
-/*     int top_padding = v_padding / 2; */
-/*     int bottom_padding = v_padding - top_padding; */
-
-/*     assert(mat->lines + top_padding + bottom_padding == height); */
-/*     assert(mat->cols + left_padding + right_padding == width); */
-
-/*     int index = 0; */
-/*     for (int top = 0; top < top_padding; top++) { */
-/*         output[index] = 0.0; */
-/*         index++; */
-/*     } */
-/*     for (int line = 0; line < mat->lines; line++) { */
-/*         for (int left = 0; left < left_padding; left++) { */
-/*             output[index] = 0.0; */
-/*             index++; */
-/*         } */
-/*         for (int col = 0; col < mat->cols; col++) { */
-/*             output[index] = M_bool_GET(mat, col, line) ? 1.0 : 0.0; */
-/*             index++; */
-/*         } */
-/*         for (int right = 0; right < right_padding; right++) { */
-/*             output[index] = 0.0; */
-/*             index++; */
-/*         } */
-/*     } */
-/*     for (int bot = 0; bot < bottom_padding; bot++) { */
-/*         output[index] = 0.0; */
-/*         index++; */
-/*     } */
-/* } */
-
 int get_letter_index(char letter) {
-    if(letter <= '.')
+    if (letter <= '.')
         return letter - 33 + SYMBOL_OFFSET;
     if (letter <= '9')
         return letter - 48 + NUMBER_OFFSET;
@@ -98,7 +61,6 @@ char prediction(t_bool_matrix *mat) {
     if (!m)
         m = mat;
     t_bool_matrix *sca = scale(m, H, V);
-    /* pprint_bool_matrix(sca); */
 
     double *input = malloc(SIZE * sizeof(double));
     mat_to_double(sca, input);
@@ -109,6 +71,7 @@ char prediction(t_bool_matrix *mat) {
         M_bool_FREE(m);
     M_bool_FREE(sca);
 
+    free(input);
     return get_letter(nn->layers[nn->hidden_layer_count + 1]->values,
                       TOKENS_LEN);
 }
@@ -124,110 +87,35 @@ void guess(struct rxy_bintree *bintree) {
 
 void set_line_end(struct rxy_bintree *bintree) { bintree->line_end = true; }
 
-void parse(struct rxy_bintree *bintree) {
-    if (!bintree)
-        return;
-    if (bintree->line_end)
-        printf("\n");
-    else if (!bintree->left && !bintree->right)
-        guess(bintree);
-    parse(bintree->left);
-    parse(bintree->right);
-}
-
-void parse_spaces(struct rxy_bintree *bintree, t_bool_matrix **arr,
-                  int *index) {
-    if (!bintree)
-        return;
-    if (!bintree->left && !bintree->right) {
-        t_bool_matrix *mat = bintree->values;
-        pprint_bool_matrix(mat);
-        if(black_count(mat) < 10)
-        {
-            printf("Doesn't look like a letter\n");
-            goto keep_going;
-        }
-        t_bool_matrix *letter = trim_all(mat);
-        /* printf("Matrix : \n"); */
-        /* pprint_bool_matrix(mat); */
-
-        /* printf("\n\nLetter : \n"); */
-        /* pprint_bool_matrix(letter); */
-        /* printf("\n\n"); */
-        if (!letter) {
-            /* printf("Letter was a space or something\n"); */
-
-        } else {
-            if (mat->cols - letter->cols > 10) {
-                /* printf("Inserting a space at index %d\n", *index); */
-                arr[(*index)++] = NULL;
-            }
-            /* printf("Inserting the letter at index %d\n", *index); */
-            arr[(*index)++] = letter;
-            /* pprint_bool_matrix(letter); */
-            /* printf("Value = %c\n", prediction(letter)); */
-        }
-    }
-keep_going:
-    parse_spaces(bintree->left, arr, index);
-    parse_spaces(bintree->right, arr, index);
-}
-
-void traverse(t_bool_matrix **arr, int len) {
-    printf("Traversing %d\n", len);
-    for (int i = 0; i < len; i++) {
-        if (!arr[i])
-            /* printf("Found a space\n"); */
-            printf(" ");
-        else {
-            /* printf("Found a letter : %p\n", (void *)arr[i]); */
-            /* pprint_bool_matrix(arr[i]); */
-            char ret = prediction(arr[i]);
-            if (ret == -1) {
-                continue;
-            }
-            /* printf("LETTER : %c\n", ret); */
-            printf("%c", ret);
-        }
-    }
-}
-
-
-
-void DISPLAY(struct rxy_bintree *bintree, int space){
-    if(!bintree){
+void DISPLAY(struct rxy_bintree *bintree, int space, FILE *f) {
+    if (!bintree) {
         return;
     }
-    if(bintree->line_end){
-        printf("\n");
+    if (bintree->line_end) {
+        fputc('\n', f);
         goto recursion;
-    }
-    else{
-        if(bintree->left || bintree->right)
+    } else {
+        if (bintree->left || bintree->right)
             goto recursion;
         int white_left = side_white_cols(bintree->values);
         /* printf("Space : %d\n", white_left); */
         t_bool_matrix *mat = bintree->values;
-        if(white_left >= mat->cols)
-        {
-            printf(" ");
+        if (white_left >= mat->cols) {
+            fputc(' ', f);
             goto recursion;
         }
-        if(white_left >= space)
-            printf(" ");
+        if (white_left >= space)
+            fputc(' ', f);
         char ret = prediction(mat);
-        if(ret != -1)
-            printf("%c", ret);
+        if (ret != -1)
+            fputc(ret, f);
         else
-            printf("?");
+            fputc('?', f);
     }
 recursion:
-    DISPLAY(bintree->left, space);
-    DISPLAY(bintree->right, space);
+    DISPLAY(bintree->left, space, f);
+    DISPLAY(bintree->right, space, f);
 }
-
-
-
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
@@ -262,22 +150,18 @@ int main(int argc, char *argv[]) {
     printf("%d space\n", space);
     draw_boxes_leaves(img, bintree, 255, 0, 0);
 
-    DISPLAY(bintree, space);
-    /* t_bool_matrix **arr = calloc(1000000, sizeof(t_bool_matrix *)); */
-    /* int i = 0; */
-    /* parse_spaces(bintree, arr, &i); */
+    FILE *f = fopen("output.txt", "w");
 
-    /* printf("Len : %d\n", i); */
-
-
-
-    /* traverse(arr, i); */
-
-    /* printf("\n"); */
+    DISPLAY(bintree, space, f);
+    fclose(f);
     display_and_wait(&screen, img);
 
     free_nn(nn);
+    M_bool_FREE(mat);
+    free_bintree(bintree);
     SDL_FreeSurface(img);
+    SDL_FreeSurface(screen);
+    SDL_Quit();
 
     return 0;
 }
