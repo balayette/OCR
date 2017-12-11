@@ -21,7 +21,7 @@ GENOBJ=$(GENSRC:.c=.o)
 opti: CFLAGS += -O3
 opti: all
 
-debug: CFLAGS += -g
+debug: CFLAGS += -g3
 debug: all
 
 all: build/neuralnet build/imgprocessing build/all

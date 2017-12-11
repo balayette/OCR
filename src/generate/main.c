@@ -1,7 +1,9 @@
 #include "imgprocessing/pixop.h"
+#include <time.h>
 #include <math.h>
 #include <dirent.h>
 #include "misc/bool_matrix.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <SDL/SDL.h>
@@ -14,6 +16,13 @@
 static const char TOKENS[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 static const int TOKENS_LEN = 62;
 
+void noisify(t_bool_matrix *mat){
+    for(int i = 0; i < mat->cols * mat->lines; i++){
+        if((float)rand() / (float)RAND_MAX > 0.98f){
+            mat->values[i] = !mat->values[i];
+        }
+    }
+}
 
 SDL_Surface *new_surface(int h, int w) {
     return SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
@@ -44,7 +53,7 @@ int count_s(SDL_Surface *s){
     return count;
 }
 
-void do_letter(TTF_Font *font, char *path, int index, char l){
+void do_letter(TTF_Font *font, char *path, int index, int nindex, char l){
     SDL_Surface *surf = NULL;
     SDL_Color black = {0, 0, 0, 255};
     char str[2] = {' ', '\0'};
@@ -55,39 +64,53 @@ void do_letter(TTF_Font *font, char *path, int index, char l){
     /* SDL_Surface *screen = NULL; */
     SDL_Surface *s = new_surface(mat->lines, mat->cols);
     matrix_to_surface(s, mat);
-    printf("\n\n\n\n");
     /* printf("Mat count : %d\n", count_m(mat)); */
     /* printf("Surf count : %d\n", count_s(surf)); */
     /* display_and_wait(&screen, surf); */
     /* display_and_wait(&screen, s); */
 
+    /* pprint_bool_matrix(mat); */
     t_bool_matrix *trimed = trim_all(mat);
+    /* printf("\n"); */
+    /* pprint_bool_matrix(trimed); */
 
     if(trimed){
         path[index] = l;
-        printf("         %s\n", path);
+        /* printf("         %s\n", path); */
         t_bool_matrix *scaled = NULL;
         if(trimed->lines != 25 || trimed->cols != 25){
             scaled = scale(trimed, 25, 25);
             M_bool_FREE(trimed);
             trimed = scaled;
         }
-        pprint_bool_matrix(scaled);
+        path[nindex] = '0';
+        save_bool_matrix(path, trimed);
+        printf("Before noisify\n");
+        pprint_bool_matrix(trimed);
+        noisify(trimed);
+        printf("Noisified\n");
+        path[nindex] = '1';
+        pprint_bool_matrix(trimed);
         save_bool_matrix(path, trimed);
         M_bool_FREE(scaled);
     }
     SDL_FreeSurface(surf);
 }
 
-void generate(char *font, char *path, int index){
-    TTF_Font *f = TTF_OpenFont(font, 30);
-    for(int i = 0; i < TOKENS_LEN; i++){
-        do_letter(f, path, index, TOKENS[i]);
+void generate(char *font, char *path, int sizeindex, int letterindex){
+    int c = 0;
+    for(int i = 150; i > 10; i -= 10, c++){
+        TTF_Font *f = TTF_OpenFont(font, i);
+        path[sizeindex] = c + 'a';
+        for(int i = 0; i < TOKENS_LEN; i++){
+            do_letter(f, path, letterindex, sizeindex + 1, TOKENS[i]);
+        }
+        TTF_CloseFont(f);
     }
-    TTF_CloseFont(f);
 }
 
 int main(int argc, char *argv[]){
+    srand(time(NULL));
     if(argc < 3){
         printf("./generate FONTS_PATH OUTPUT_PATH\n");
         exit(1);
@@ -127,12 +150,13 @@ int main(int argc, char *argv[]){
             strcpy(indiv_font_path + lenfonts, dir->d_name);
 
             strcpy(indiv_output_path + lenoutput, dir->d_name);
-            strcpy(indiv_output_path + lenoutput + strlen(dir->d_name) - 4, ".*");
-            int index = strlen(indiv_output_path) - 1;
+            strcpy(indiv_output_path + lenoutput + strlen(dir->d_name) - 4, ".size.*");
+            int sizeindex = strlen(indiv_output_path) - 6;
+            int letterindex = strlen(indiv_output_path) - 1;
 
             printf("Found font %s\n", indiv_font_path);
             printf("    Outputing to %s\n", indiv_output_path);
-            generate(indiv_font_path, indiv_output_path, index);
+            generate(indiv_font_path, indiv_output_path, sizeindex, letterindex);
         }
     }
 

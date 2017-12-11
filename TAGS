@@ -1,148 +1,369 @@
-    
-headers/imgprocessing/boxes.h,161
-#define BOXES_HBOXES_H2,16
-typedef struct s_boxes {s_boxes6,51
-    t_box ***boxes;boxes7,76
-    int h;h8,96
-    int w;w9,107
-} t_boxes;t_boxes10,118
 
-headers/imgprocessing/pixop.h,29
-#define PIXOP_HPIXOP_H2,16
+include/imgprocessing/pixop.h,29
+#define PIXOP_HPIXOP_H6,67
 
-headers/imgprocessing/drawing.h,33
-#define DRAWING_HDRAWING_H2,18
+include/imgprocessing/drawing.h,33
+#define DRAWING_HDRAWING_H6,67
 
-headers/imgprocessing/box.h,260
-#define BOX_HBOX_H2,14
-typedef struct s_box {s_box8,73
-    int x;x9,96
-    int y;y10,107
-    int height;height11,118
-    int width;width12,134
-    bool is_top_of_line;is_top_of_line13,149
-    int line_span;line_span14,174
-} t_box;t_box15,193
+include/imgprocessing/display.h,33
+#define DISPLAY_HDISPLAY_H6,73
 
-headers/imgprocessing/processing.h,39
-#define PROCESSING_HPROCESSING_H2,21
+include/imgprocessing/recxy.h,29
+#define RECXY_HRECXY_H6,80
 
-headers/misc/utils.h,29
-#define UTILS_HUTILS_H2,16
+include/imgprocessing/processing.h,39
+#define PROCESSING_HPROCESSING_H6,89
 
-headers/neuralnet/layer.h,465
-#define LAYER_HLAYER_H2,16
-typedef struct s_layer {s_layer34,962
-    int neuron_count;neuron_count35,987
-    int prev_layer_size;prev_layer_size36,1009
-    bool output_layer;output_layer37,1034
-    double **weights;weights38,1057
-    double *hidden_values;hidden_values39,1079
-    double *values;values40,1106
-    double *deltas;deltas41,1126
-    double *bias_weights;bias_weights42,1146
-    double bias;bias43,1172
-} t_layer;t_layer44,1189
+include/imgprocessing/rxy_bintree.h,570
+#define RXY_BINTREE_HRXY_BINTREE_H6,112
+struct rxy_bintree {rxy_bintree15,255
+    int x;x16,276
+    int y;y17,287
+    bool line_end;line_end18,298
+    t_bool_matrix *values;values19,317
+    struct rxy_bintree *left;left20,344
+    struct rxy_bintree *right;right21,374
+enum PRINT_POSITION { PREORDER, INORDER, POSTORDER };PRINT_POSITION24,409
+enum PRINT_POSITION { PREORDER, INORDER, POSTORDER };PREORDER24,409
+enum PRINT_POSITION { PREORDER, INORDER, POSTORDER };INORDER24,409
+enum PRINT_POSITION { PREORDER, INORDER, POSTORDER };POSTORDER24,409
 
-headers/neuralnet/neuralnet.h,368
-#define NEURAL_NET_HNEURAL_NET_H2,21
-typedef struct s_neural_net {s_neural_net14,207
-    int input_count;input_count15,237
-    int hidden_layer_count;hidden_layer_count16,258
-    int neuron_count;neuron_count17,286
-    int output_count;output_count18,308
-    t_layer **layers;layers19,330
-    double bias;bias20,352
-} t_neural_net;t_neural_net21,369
+include/misc/matrix.h,125
+#define MATRIX_HMATRIX_H2,17
+#define INIT_MATRIX(INIT_MATRIX9,116
+#define INIT_MATRIX_HEADER(INIT_MATRIX_HEADER34,1986
 
-sources/imgprocessing/processing.c,1253
-void map_image(SDL_Surface *img,map_image9,231
-Uint32 get_gray_level(SDL_Surface *img, Uint8 *r, Uint8 *g, Uint8 *b) {get_gray_level22,641
-void gray_level(SDL_Surface *img) { map_image(img, get_gray_level); }gray_level27,834
-Uint32 get_inverse(SDL_Surface *img, Uint8 *r, Uint8 *g, Uint8 *b) {get_inverse29,905
-void inverse(SDL_Surface *img) { map_image(img, get_inverse); }inverse36,1082
-void binarize(SDL_Surface *img, int threshold) {binarize38,1147
-void contrast(SDL_Surface *img, int value) {contrast51,1556
-SDL_Surface *blur(SDL_Surface *input, int radius) {blur67,2121
-int otsu(SDL_Surface *img) {otsu108,3468
-#define CUTS CUTS149,4652
-t_boxes *init_dac(SDL_Surface *img, int *size, int *hbox_count,init_dac152,4695
-int get_nth_height(int *ln, int lnlen, int n) {get_nth_height171,5328
-void divide_and_conquer(SDL_Surface *img) {divide_and_conquer185,5588
-SDL_Surface *copy_surface(SDL_Surface *img) {copy_surface341,11392
-SDL_Surface *hrlsa(SDL_Surface *img, int c) {hrlsa350,11720
-SDL_Surface *vrlsa(SDL_Surface *img, int c) {vrlsa412,13590
-SDL_Surface *recombine(SDL_Surface *h, SDL_Surface *v) {recombine450,14817
-SDL_Surface *rlsa(SDL_Surface *img, int c, SDL_Surface **h, SDL_Surface **v) {rlsa470,15451
+include/misc/utils.h,29
+#define UTILS_HUTILS_H6,66
 
-sources/imgprocessing/drawing.c,289
-void draw_rect_fill(SDL_Surface *img, int x, int y, int h, int w) {draw_rect_fill4,69
-void draw_line(SDL_Surface *img, Uint32 color, int xstart, int xend, int y) {draw_line14,315
-void draw_rect_outline(SDL_Surface *img, int x, int y, int h, int w, Uint32 c) {draw_rect_outline18,471
+include/misc/bool_matrix.h,41
+#define BOOL_MATRIX_HBOOL_MATRIX_H2,22
 
-sources/imgprocessing/pixop.c,260
-static inline Uint8 *pixelref(SDL_Surface *surf, unsigned x, unsigned y) {pixelref4,75
-Uint32 getpixel(SDL_Surface *surface, unsigned x, unsigned y) {getpixel9,258
-void putpixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel) {putpixel27,714
+include/neuralnet/layer.h,428
+#define LAYER_HLAYER_H6,78
+struct layer {layer36,1074
+    int neuron_count;neuron_count37,1089
+    int prev_layer_size;prev_layer_size38,1111
+    bool output_layer;output_layer39,1136
+    double **weights;weights40,1159
+    double *hidden_values;hidden_values41,1181
+    double *values;values42,1208
+    double *deltas;deltas43,1228
+    double *bias_weights;bias_weights44,1248
+    double bias;bias45,1274
 
-sources/imgprocessing/boxes.c,310
-t_box *getbox(t_boxes *boxes, int i, int j) { return boxes->boxes[i][j]; }getbox6,114
-void setbox(t_boxes *boxes, int i, int j, t_box *box) {setbox8,190
-t_boxes *new_boxes(int v, int h) {new_boxes14,325
-t_box *get_next_bwbn(t_boxes *boxes, int i, int j, int towards, int direction){get_next_bwbn29,745
+include/neuralnet/neuralnet.h,325
+#define NEURAL_NET_HNEURAL_NET_H6,82
+struct neural_net {neural_net20,328
+    int input_count;input_count21,348
+    int hidden_layer_count;hidden_layer_count22,369
+    int neuron_count;neuron_count23,397
+    int output_count;output_count24,419
+    struct layer **layers;layers25,441
+    double bias;bias26,468
 
-sources/imgprocessing/box.c,214
-bool check_black_percent(SDL_Surface *img, t_box *box) {check_black_percent7,184
-void draw_box(SDL_Surface *img, t_box *box) {draw_box28,773
-t_box *new_box(int x, int y, int height, int width) {new_box33,945
+include/neuralnet/save.h,33
+#define SAVE_NN_HSAVE_NN_H6,88
 
-sources/imgprocessing/main.c,315
-void print_mouse_pos(){print_mouse_pos7,137
-void wait_for_keypressed(void) {wait_for_keypressed14,271
-void init_sdl(void) {init_sdl29,586
-SDL_Surface* load_image(char *path) {load_image35,725
-SDL_Surface* display_image(SDL_Surface *img) {display_image43,913
-int main(int argc, char *argv[]){main61,1422
+include/matrix/matrixop.h,35
+#define MATRIXOP_HMATRIXOP_H6,80
 
-sources/misc/utils.c,835
-void mapi(double (*f)(double), double *list, const int count) {mapi8,133
-double *map(double (*f)(double), double *input, const int count){map13,266
-double sum_double_arr(double *arr, const int count) {sum_double_arr21,482
-void print_double_arr(double *arr, const int count) {print_double_arr29,642
-double sigmoid(double a) { return (1 / (1 + exp(-a))); }sigmoid44,986
-double sigmoid_deriv(double a) { return a * (1 - a); }sigmoid_deriv46,1044
-bool cmp_double_array(const double *a1, const int size1, const double *a2, const int size2){cmp_double_array48,1100
-double *div_scalar_by_array(double scalar, double *list, int count){div_scalar_by_array57,1350
-double *multiply_arrays(double *a1, double *a2, int count){multiply_arrays65,1565
-double threshold(double value) { return 0.5 > value ? 0 : 1; }threshold71,1760
+build/all.c,991
+static const char TOKENS[] =TOKENS12,264
+static const int TOKENS_LEN = 62;TOKENS_LEN14,363
+static const int LETTER_OFFSET = 0;LETTER_OFFSET15,397
+static const int NUMBER_OFFSET = 52;NUMBER_OFFSET16,433
+static const int CAPS_OFFSET = 26;CAPS_OFFSET17,470
+struct neural_net *nn;nn19,506
+void mat_to_double(t_bool_matrix *mat, double *output){mat_to_double22,531
+int get_letter_index(char letter) {get_letter_index66,2076
+char get_letter(double *arr, int size) {get_letter76,2339
+void aol(struct rxy_bintree *b){aol88,2581
+char prediction(t_bool_matrix *mat){prediction92,2642
+void guess(struct rxy_bintree *bintree){guess110,3067
+void set_line_end(struct rxy_bintree *bintree){set_line_end118,3269
+void parse(struct rxy_bintree *bintree){parse122,3350
+int parse_spaces(struct rxy_bintree *bintree, t_bool_matrix **arr, int *index){parse_spaces134,3611
+void traverse(t_bool_matrix **arr, int len){traverse158,4321
+int main(int argc, char *argv[]){main175,4716
 
-sources/neuralnet/layer.c,274
-void free_layer(t_layer *layer) {free_layer7,142
-void init_weights(t_layer *layer) {init_weights21,491
-t_layer *create_layer(const int prev_layer_size, const int neuron_count,create_layer33,913
-void process_input(t_layer *layer, double *input) {process_input54,1753
+build/neuralnet.c,1272
+#define _GNU_SOURCE_GNU_SOURCE1,0
+static const char TOKENS[] =TOKENS13,253
+static const int TOKENS_LEN = 62;TOKENS_LEN15,352
+static const int LETTER_OFFSET = 0;LETTER_OFFSET16,386
+static const int NUMBER_OFFSET = 52;NUMBER_OFFSET17,422
+static const int CAPS_OFFSET = 26;CAPS_OFFSET18,459
+void mat_to_double(t_bool_matrix *mat, double *output){mat_to_double20,495
+int get_letter_index(char letter) {get_letter_index64,2053
+void get_output(double *arr, char letter) {get_output75,2344
+char get_letter(double *arr, int size) {get_letter79,2432
+struct dataset {dataset94,2793
+    int *sizes;sizes95,2810
+    t_bool_matrix ***data;data96,2826
+struct cache {cache99,2857
+    int *sizes;sizes100,2872
+    double ***data;data101,2888
+    double **output;output102,2908
+struct cache *cache_from_dataset(struct dataset *ds) {cache_from_dataset105,2933
+void free_cache(struct cache *c) {free_cache126,3663
+struct dataset *load_dataset(char *path) {load_dataset141,3969
+void free_dataset(struct dataset *ds) {free_dataset196,5812
+void print_diff(double *arr1, double *arr2, int size) {print_diff226,6584
+void generate_cache(t_bool_matrix **dataset, double **cache) {generate_cache232,6733
+int main(int argc, char *argv[]) {main246,7102
 
-sources/neuralnet/main.c,52
-int main(int argc, const char *argv[]) {main6,125
+build/imgprocessing.c,21
+int main(){main1,0
 
-sources/neuralnet/neuralnet.c,452
-t_neural_net *create_nn(const int input_count, const int hidden_layer_count,create_nn7,168
-void free_nn(t_neural_net *nn) {free_nn28,1052
-void print_nn(const t_neural_net *nn) {print_nn37,1277
-void forward_prop(t_neural_net *nn, double *input) {forward_prop51,1845
-double error(double *expected, double *result) { return *expected - *result; }error60,2152
-void back_prop(t_neural_net *nn, double *expected, double *input) {back_prop62,2232
+src/generate/main.c,506
+static const char TOKENS[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";TOKENS14,310
+static const int TOKENS_LEN = 62;TOKENS_LEN15,405
+SDL_Surface *new_surface(int h, int w) {new_surface18,441
+int count_m(t_bool_matrix *m){count_m22,543
+int count_s(SDL_Surface *s){count_s33,772
+void do_letter(TTF_Font *font, char *path, int index, char l){do_letter47,1110
+void generate(char *font, char *path, int index){generate85,2287
+int main(int argc, char *argv[]){main93,2498
 
-Makefile,379
-CC=clangCC1,0
-CFLAGS= -Wall -Wextra -pedantic -std=c99 -Werror -gCFLAGS2,9
-CPPFLAGS= `pkg-config --cflags sdl` -MMDCPPFLAGS3,61
-LDLIBS= `pkg-config --libs sdl` -lSDL_imageLDLIBS4,102
-LDFLAGS= -lmLDFLAGS5,146
-NNSRC=$(wildcard sources/neuralnet/*.c)NNSRC7,160
-IMGSRC=$(wildcard sources/imgprocessing/*.c)IMGSRC8,200
-MISCSRC=$(wildcard sources/misc/*.c)MISCSRC9,245
+src/imgprocessing/processing.c,994
+void map_image(SDL_Surface *img,map_image9,157
+Uint32 get_gray_level(SDL_Surface *img, Uint8 *r, Uint8 *g, Uint8 *b) {get_gray_level22,567
+void gray_level(SDL_Surface *img) { map_image(img, get_gray_level); }gray_level27,760
+Uint32 get_inverse(SDL_Surface *img, Uint8 *r, Uint8 *g, Uint8 *b) {get_inverse29,831
+void inverse(SDL_Surface *img) { map_image(img, get_inverse); }inverse36,1008
+void binarize(SDL_Surface *img, int threshold) {binarize38,1073
+void contrast(SDL_Surface *img, int value) {contrast51,1482
+SDL_Surface *blur(SDL_Surface *input, int radius) {blur67,2047
+int otsu(SDL_Surface *img) {otsu108,3394
+SDL_Surface *copy_surface(SDL_Surface *img) {copy_surface149,4578
+SDL_Surface *hrlsa(SDL_Surface *img, int c) {hrlsa158,4906
+SDL_Surface *vrlsa(SDL_Surface *img, int c) {vrlsa195,6113
+SDL_Surface *recombine(SDL_Surface *h, SDL_Surface *v) {recombine232,7320
+SDL_Surface *rlsa(SDL_Surface *img, int c, SDL_Surface **h, SDL_Surface **v) {rlsa253,7955
 
-res/ImagesOCR/Simples/index.html,0
+src/imgprocessing/drawing.c,289
+void draw_rect_fill(SDL_Surface *img, int x, int y, int h, int w) {draw_rect_fill4,55
+void draw_line(SDL_Surface *img, Uint32 color, int xstart, int xend, int y) {draw_line14,301
+void draw_rect_outline(SDL_Surface *img, int x, int y, int h, int w, Uint32 c) {draw_rect_outline18,485
 
-res/ImagesOCR/Advanced/index.html,0
+src/imgprocessing/pixop.c,260
+static inline Uint8 *pixelref(SDL_Surface *surf, unsigned x, unsigned y) {pixelref4,61
+Uint32 getpixel(SDL_Surface *surface, unsigned x, unsigned y) {getpixel9,244
+void putpixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel) {putpixel27,700
+
+src/imgprocessing/display.c,363
+void init_sdl(void) {init_sdl5,66
+void print_mouse_pos(void) {print_mouse_pos11,247
+void wait_for_keypressed(void) {wait_for_keypressed18,386
+SDL_Surface *load_image(char *path) {load_image34,700
+void display(SDL_Surface **screen, SDL_Surface *img) {display42,879
+void display_and_wait(SDL_Surface **screen, SDL_Surface *img) {display_and_wait53,1281
+
+src/imgprocessing/rxy_bintree.c,670
+void apply_on_leaves2(struct rxy_bintree *b,apply_on_leaves27,172
+void apply_on_leaves(struct rxy_bintree *b, void (*f)(struct rxy_bintree *)) {apply_on_leaves19,480
+struct rxy_bintree *create_rxy_bintree(t_bool_matrix *value, int x, int y) {create_rxy_bintree31,739
+int bcount_leaves(struct rxy_bintree *b) {bcount_leaves42,1030
+void df_display(SDL_Surface **screen, Uint32 flags, SDL_PixelFormat *fmt,df_display50,1214
+void df_display_leaves(SDL_Surface **screen, Uint32 flags, SDL_PixelFormat *fmt,df_display_leaves63,1690
+int bcount(struct rxy_bintree *b) {bcount81,2314
+void free_complete_bintree(struct rxy_bintree *b){free_complete_bintree87,2434
+
+src/imgprocessing/recxy.c,588
+void _recxy(struct rxy_bintree *parent, bool h, int cut, bool endnext) {_recxy12,282
+void _recxy_only_h(struct rxy_bintree *parent, int cut) {_recxy_only_h87,3163
+void trim_white_cols(struct rxy_bintree *b){trim_white_cols122,4476
+void trim_white_lines(struct rxy_bintree *b){trim_white_lines130,4670
+void _recxy_only_v(struct rxy_bintree *parent, int cut) {_recxy_only_v138,4868
+struct rxy_bintree *recxy(t_bool_matrix *img, bool onlyh) {recxy160,5623
+void draw_boxes_leaves(SDL_Surface *img, struct rxy_bintree *b, int red, int green, int blue) {draw_boxes_leaves170,5868
+
+src/misc/utils.c,967
+void mapi(double (*f)(double), double *list, const int count) {mapi8,119
+double *map(double (*f)(double), double *input, const int count){map13,252
+double sum_double_arr(double *arr, const int count) {sum_double_arr21,468
+void print_double_arr(double *arr, const int count) {print_double_arr29,628
+double sigmoid(double a) { return (1 / (1 + exp(-a))); }sigmoid44,972
+double sigmoid_deriv(double a) { return a * (1 - a); }sigmoid_deriv46,1030
+void softmax(double *weighted_inputs, double *arr, int size){softmax48,1086
+double softmax_deriv(double a){softmax_deriv61,1452
+bool cmp_double_array(const double *a1, const int size1, const double *a2, const int size2){cmp_double_array66,1516
+double *div_scalar_by_array(double scalar, double *list, int count){div_scalar_by_array75,1766
+double *multiply_arrays(double *a1, double *a2, int count){multiply_arrays83,1981
+double threshold(double value) { return 0.5 > value ? 0 : 1; }threshold89,2176
+
+src/misc/bool_matrix.c,256
+INIT_MATRIX(bool)INIT_MATRIX5,77
+void save_bool_matrix(char *path, t_bool_matrix *mat) {save_bool_matrix16,318
+t_bool_matrix *load_bool_matrix(char *path){load_bool_matrix28,681
+void pprint_bool_matrix(t_bool_matrix *mat){pprint_bool_matrix43,1171
+
+src/neuralnet/layer.c,383
+void free_layer(struct layer *layer) {free_layer7,114
+void init_weights(struct layer *layer) {init_weights21,447
+struct layer *create_layer(const int prev_layer_size, const int neuron_count,create_layer33,874
+void process_last_input(struct layer *layer, double *input) {process_last_input55,1791
+void process_input(struct layer *layer, double *input) {process_input72,2481
+
+src/neuralnet/neuralnet.c,472
+struct neural_net *create_nn(const int input_count, const int hidden_layer_count,create_nn11,195
+void free_nn(struct neural_net *nn) {free_nn32,1104
+void print_nn(struct neural_net *nn) {print_nn40,1281
+void forward_prop(struct neural_net *nn, double *input) {forward_prop54,1848
+double error(double *expected, double *result) { return *expected - *result; }error64,2236
+void back_prop(struct neural_net *nn, double *expected, double *input) {back_prop66,2316
+
+src/neuralnet/save.c,122
+void save_nn(struct neural_net *nn, char *path) {save_nn13,214
+struct neural_net *load_nn(char *path) {load_nn48,1458
+
+src/matrix/matrixop.c,1774
+t_bool_matrix *surface_to_matrix(SDL_Surface *img){surface_to_matrix10,263
+void matrix_to_surface(SDL_Surface *surface, t_bool_matrix *m){matrix_to_surface29,805
+t_bool_matrix *hrlsa_bm(t_bool_matrix *img, int c){hrlsa_bm38,1103
+t_bool_matrix *vrlsa_bm(t_bool_matrix *img, int c){vrlsa_bm67,2009
+t_bool_matrix *recombine_bm(t_bool_matrix *a, t_bool_matrix *b){recombine_bm96,2914
+t_bool_matrix *rlsa_bm(t_bool_matrix *img, int c, t_bool_matrix **h, t_bool_matrix **v){rlsa_bm107,3220
+t_bool_matrix *_trim_cols_after(t_bool_matrix *mat){_trim_cols_after114,3437
+t_bool_matrix *_trim_cols_before(t_bool_matrix *mat){_trim_cols_before135,3906
+t_bool_matrix *_trim_lines_before(t_bool_matrix *mat){_trim_lines_before155,4404
+t_bool_matrix *_trim_lines_after(t_bool_matrix *mat){_trim_lines_after176,4928
+t_bool_matrix *trim_lines(t_bool_matrix *mat){trim_lines196,5417
+bool is_black(t_bool_matrix *m)is_black211,5704
+t_bool_matrix *trim_cols(t_bool_matrix *mat){trim_cols218,5848
+t_bool_matrix *trim_all(t_bool_matrix *mat){trim_all238,6364
+t_bool_matrix *before_h(t_bool_matrix *mat, int y) {before_h252,6663
+t_bool_matrix *after_h(t_bool_matrix *mat, int y) {after_h263,6967
+t_bool_matrix *before_v(t_bool_matrix *mat, int x) {before_v274,7291
+t_bool_matrix *after_v(t_bool_matrix *mat, int x) {after_v285,7597
+bool is_white_col(t_bool_matrix *mat, int x) {is_white_col295,7907
+bool is_white_line(t_bool_matrix *mat, int y) {is_white_line302,8076
+bool is_white(t_bool_matrix *mat, int x, int y, int h, int w) {is_white309,8245
+int find_v_cut(t_bool_matrix *mat, int span) {find_v_cut321,8536
+int find_h_cut(t_bool_matrix *mat, int span) {find_h_cut341,9028
+t_bool_matrix *scale(t_bool_matrix *mat, int nh, int nw){scale362,9593
+
+build_opti.sh,0
+
+Makefile,586
+CFLAGS= -Wall -Wextra -pedantic -std=c99 -Werror -Iinclude/CFLAGS1,0
+CPPFLAGS=CPPFLAGS2,60
+LDLIBS=-lmLDLIBS3,70
+LDFLAGS=LDFLAGS4,81
+MATRIXSRC=$(wildcard src/matrix/*.c)MATRIXSRC6,91
+MATRIXOBJ=$(MATRIXSRC:.c=.o)MATRIXOBJ7,128
+NNSRC=$(wildcard src/neuralnet/*.c)NNSRC9,158
+NNOBJ=$(NNSRC:.c=.o)NNOBJ10,194
+IMGSRC=$(wildcard src/imgprocessing/*.c)IMGSRC12,216
+IMGOBJ=$(IMGSRC:.c=.o)IMGOBJ13,257
+MISCSRC=$(wildcard src/misc/*.c)MISCSRC15,281
+MISCOBJ=$(MISCSRC:.c=.o)MISCOBJ16,314
+GENSRC=$(wildcard src/generate/*.c)GENSRC18,340
+GENOBJ=$(GENSRC:.c=.o)GENOBJ19,376
+
+res/data/Helvetica-Regular.l,0
+
+res/data/arial.C,0
+
+res/data/Helvetica-Regular.e,0
+
+res/data/Roboto-Regular.l,0
+
+res/data/arial.H,0
+
+res/data/Roboto-Regular.p,0
+
+res/data/arial.S,0
+
+res/data/OpenSans-Regular.v,0
+
+res/data/arial.f,0
+
+res/data/Helvetica-Regular.h,0
+
+res/data/Roboto-Regular.H,0
+
+res/data/Helvetica-Regular.H,0
+
+res/data/OpenSans-Regular.C,0
+
+res/data/OpenSans-Regular.e,0
+
+res/data/Roboto-Regular.v,0
+
+res/data/OpenSans-Regular.p,0
+
+res/data/Roboto-Regular.C,0
+
+res/data/Roboto-Regular.F,0
+
+res/data/arial.p,0
+
+res/data/Roboto-Regular.c,0
+
+res/data/Helvetica-Regular.m,0
+
+res/data/Helvetica-Regular.p,0
+
+res/data/Helvetica-Regular.v,0
+
+res/data/Helvetica-Regular.y,0
+
+res/data/OpenSans-Regular.s,0
+
+res/data/OpenSans-Regular.F,0
+
+res/data/arial.l,0
+
+res/data/arial.h,0
+
+res/data/OpenSans-Regular.c,0
+
+res/data/arial.c,0
+
+res/data/Roboto-Regular.S,0
+
+res/data/Roboto-Regular.y,0
+
+res/data/arial.v,0
+
+res/data/OpenSans-Regular.H,0
+
+res/data/OpenSans-Regular.m,0
+
+res/data/Helvetica-Regular.c,0
+
+res/data/Roboto-Regular.h,0
+
+res/data/arial.e,0
+
+res/data/Helvetica-Regular.s,0
+
+res/data/Roboto-Regular.s,0
+
+res/data/arial.m,0
+
+res/data/OpenSans-Regular.f,0
+
+res/data/Roboto-Regular.e,0
+
+res/data/Helvetica-Regular.F,0
+
+res/data/arial.s,0
+
+res/data/arial.F,0
+
+res/data/Roboto-Regular.f,0
+
+res/data/OpenSans-Regular.l,0
+
+res/data/OpenSans-Regular.y,0
+
+res/data/arial.y,0
+
+res/data/Roboto-Regular.m,0
+
+res/data/OpenSans-Regular.h,0
+
+res/data/OpenSans-Regular.S,0

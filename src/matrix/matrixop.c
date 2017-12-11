@@ -161,7 +161,9 @@ t_bool_matrix *_trim_lines_before(t_bool_matrix *mat){
         if(!is_white_line(mat, y))
             break;
     }
-    if(y == 0 || y == mat->lines - 1){
+    if(y == 0)
+        return mat;
+    if(y == mat->lines - 1){
         return NULL;
     }
     t_bool_matrix *ret = CREATE_bool_MATRIX(mat->lines - y , mat->cols);
@@ -202,10 +204,24 @@ t_bool_matrix *trim_lines(t_bool_matrix *mat){
         return NULL;
     }
     t_bool_matrix *after = _trim_lines_after(before);
+    if(!after)
+        return before;
+    if(after == before)
+        return after;
+    if(after != before){
+        if(before != mat){
+            M_bool_FREE(before);
+        }
+        return after;
+    }
+    return NULL;
+}
 
-    M_bool_FREE(before);
-
-    return after;
+bool is_black(t_bool_matrix *m)
+{
+    int x = 0;
+    for(; x < m->lines * m->cols && m->values[x]; x++);
+    return x == m->lines * m->cols;
 }
 
 t_bool_matrix *trim_cols(t_bool_matrix *mat){
@@ -215,18 +231,28 @@ t_bool_matrix *trim_cols(t_bool_matrix *mat){
     if(!before)
         return NULL;
     t_bool_matrix *after = _trim_cols_after(before);
+    if(!after)
+        return before;
 
-    if(after->cols == 1){
-        t_bool_matrix *bound = CREATE_bool_MATRIX(after->lines, 5);
-        printf("Creating bounds\n");
-        for(int y = 0; y < after->lines; y++){
-            M_bool_SET(bound, 2, y, 1);
-        }
-        M_bool_FREE(after);
-        after = bound;
+    if(after == before)
+        return after;
+    if(after != before){
+        if(before != mat)
+            M_bool_FREE(before);
+        return after;
     }
-    M_bool_FREE(before);
-    return after;
+    return NULL;
+
+    /* if(is_black(after)){ */
+    /*     t_bool_matrix *bound = CREATE_bool_MATRIX(after->lines, 5); */
+    /*     for(int y = 0; y < after->lines; y++){ */
+    /*         M_bool_SET(bound, 2, y, 1); */
+    /*     } */
+    /*     M_bool_FREE(after); */
+    /*     after = bound; */
+    /* } */
+    /* M_bool_FREE(before); */
+    /* return after; */
 }
 
 t_bool_matrix *trim_all(t_bool_matrix *mat){
@@ -369,4 +395,22 @@ t_bool_matrix *scale(t_bool_matrix *mat, int nh, int nw){
         }
     }
     return ret;
+}
+
+int black_count(t_bool_matrix *mat){
+    if(!mat)
+        return 0.0;
+    int size = mat->lines * mat->cols;
+    int c = 0;
+    for(int i = 0; i < size; i++)
+        c += mat->values[i] ? 1 : 0;
+    return c;
+}
+
+int side_white_cols(t_bool_matrix *mat){
+    if(!mat)
+        return 0;
+    int i = 0;
+    for(; i < mat->cols && is_white_col(mat, i); i++);
+    return i;
 }
