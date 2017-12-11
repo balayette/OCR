@@ -9,12 +9,17 @@
 #include "matrix/matrixop.h"
 #include "misc/bool_matrix.h"
 
+#define H 35
+#define V 45
+#define SIZE H*V
+
 static const char TOKENS[] =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-static const int TOKENS_LEN = 62;
-static const int LETTER_OFFSET = 0;
-static const int NUMBER_OFFSET = 52;
-static const int CAPS_OFFSET = 26;
+    "!\"#$%&'()*+,-.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+static const int TOKENS_LEN = 73;
+static const int SYMBOL_OFFSET = 0;
+static const int LETTER_OFFSET = 14;
+static const int CAPS_OFFSET = 26 + 14;
+static const int NUMBER_OFFSET = 26 + 26 + 14;
 
 struct neural_net *nn;
 
@@ -63,6 +68,8 @@ void mat_to_double(t_bool_matrix *mat, double *output) {
 /* } */
 
 int get_letter_index(char letter) {
+    if(letter <= '.')
+        return letter - 33 + SYMBOL_OFFSET;
     if (letter <= '9')
         return letter - 48 + NUMBER_OFFSET;
     else if (letter <= 'Z')
@@ -90,10 +97,10 @@ char prediction(t_bool_matrix *mat) {
     t_bool_matrix *m = trim_all(mat);
     if (!m)
         m = mat;
-    t_bool_matrix *sca = scale(m, 25, 25);
+    t_bool_matrix *sca = scale(m, H, V);
     /* pprint_bool_matrix(sca); */
 
-    double *input = malloc(625 * sizeof(double));
+    double *input = malloc(SIZE * sizeof(double));
     mat_to_double(sca, input);
 
     forward_prop(nn, input);

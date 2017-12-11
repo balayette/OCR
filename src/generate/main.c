@@ -13,8 +13,13 @@
 #include "matrix/matrixop.h"
 #include <string.h>
 
-static const char TOKENS[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-static const int TOKENS_LEN = 62;
+static const char TOKENS[] =
+    "!\"#$%&'()*+,-.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+static const int TOKENS_LEN = 76;
+
+#define H 35
+#define V 45
+#define SIZE H*V
 
 void noisify(t_bool_matrix *mat){
     for(int i = 0; i < mat->cols * mat->lines; i++){
@@ -59,6 +64,8 @@ void do_letter(TTF_Font *font, char *path, int index, int nindex, char l){
     char str[2] = {' ', '\0'};
     str[0] = l;
     surf = TTF_RenderText_Solid(font, str, black);
+    if(!surf)
+        return;
     t_bool_matrix *mat = surface_to_matrix(surf);
 
     /* SDL_Surface *screen = NULL; */
@@ -70,7 +77,9 @@ void do_letter(TTF_Font *font, char *path, int index, int nindex, char l){
     /* display_and_wait(&screen, s); */
 
     /* pprint_bool_matrix(mat); */
-    t_bool_matrix *trimed = trim_all(mat);
+    t_bool_matrix *trimed = mat;
+    if(l > '.')
+        trimed = trim_all(mat);
     /* printf("\n"); */
     /* pprint_bool_matrix(trimed); */
 
@@ -78,20 +87,24 @@ void do_letter(TTF_Font *font, char *path, int index, int nindex, char l){
         path[index] = l;
         /* printf("         %s\n", path); */
         t_bool_matrix *scaled = NULL;
-        if(trimed->lines != 25 || trimed->cols != 25){
-            scaled = scale(trimed, 25, 25);
-            M_bool_FREE(trimed);
+        if(trimed->lines != H || trimed->cols != V){
+            /* printf("Scaling\n"); */
+            scaled = scale(trimed, H, V);
+            if(trimed != mat)
+                M_bool_FREE(trimed);
             trimed = scaled;
         }
         path[nindex] = '0';
         save_bool_matrix(path, trimed);
-        printf("Before noisify\n");
-        pprint_bool_matrix(trimed);
-        noisify(trimed);
-        printf("Noisified\n");
-        path[nindex] = '1';
-        pprint_bool_matrix(trimed);
-        save_bool_matrix(path, trimed);
+        /* printf("Before noisify\n"); */
+        /* pprint_bool_matrix(trimed); */
+        for(int i = 0; i < 9; i++){
+            noisify(trimed);
+            /* printf("Noisified\n"); */
+            path[nindex] = '0' + i;
+            /* pprint_bool_matrix(trimed); */
+            save_bool_matrix(path, trimed);
+        }
         M_bool_FREE(scaled);
     }
     SDL_FreeSurface(surf);
@@ -99,7 +112,7 @@ void do_letter(TTF_Font *font, char *path, int index, int nindex, char l){
 
 void generate(char *font, char *path, int sizeindex, int letterindex){
     int c = 0;
-    for(int i = 150; i > 10; i -= 10, c++){
+    for(int i = 150; i > 50; i -= 10, c++){
         TTF_Font *f = TTF_OpenFont(font, i);
         path[sizeindex] = c + 'a';
         for(int i = 0; i < TOKENS_LEN; i++){
