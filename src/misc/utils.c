@@ -43,7 +43,15 @@ void print_double_arr(double *arr, const int count) {
 }
 double sigmoid(double a) { return (1 / (1 + exp(-a))); }
 
-double sigmoid_deriv(double a) { return a * (1 - a); }
+double sigmoid_deriv(double a) { return a * (1.0 - a); }
+
+void softmax2(double *weighted_inputs, double w_sum, double *arr, int size){
+    if(w_sum == 0)
+        w_sum = 1;
+    for(int i = 0; i < size; i++){
+        arr[i] = exp(weighted_inputs[i]) / w_sum;
+    }
+}
 
 void softmax(double *weighted_inputs, double *arr, int size){
     double w_sum = 0;

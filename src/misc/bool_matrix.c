@@ -41,6 +41,8 @@ t_bool_matrix *load_bool_matrix(char *path){
 }
 
 void pprint_bool_matrix(t_bool_matrix *mat){
+    if(!mat)
+        return;
     for(int y = 0; y < mat->lines; y++){
         printf("|");
         for(int x = 0; x < mat->cols; x++){

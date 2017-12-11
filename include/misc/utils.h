@@ -47,6 +47,7 @@ double sigmoid(double a);
 double sigmoid_deriv(double a);
 
 void softmax(double *weighted_inputs, double *arr, int size);
+void softmax2(double *weighted_inputs, double w_sum, double *arr, int size);
 
 double softmax_deriv(double a);
 

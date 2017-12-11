@@ -21,10 +21,10 @@ GENOBJ=$(GENSRC:.c=.o)
 opti: CFLAGS += -O3
 opti: all
 
-debug: CFLAGS += -g
+debug: CFLAGS += -g3
 debug: all
 
-all: build/neuralnet build/imgprocessing
+all: build/neuralnet build/imgprocessing build/all
 
 build/neuralnet: build/neuralnet.o $(NNOBJ) $(MISCOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
@@ -34,6 +34,10 @@ build/imgprocessing: LDLIBS += `pkg-config --libs SDL_image`
 build/imgprocessing: build/imgprocessing.o $(IMGOBJ) $(MISCOBJ) $(MATRIXOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
 
+build/all: CPPFLAGS += `pkg-config --cflags sdl`
+build/all: LDLIBS += `pkg-config --libs SDL_image`
+build/all: build/all.o $(NNOBJ) $(IMGOBJ) $(MISCOBJ) $(MATRIXOBJ)
+	$(LINK.o) $^ -o $@ $(LDLIBS)
 
 generate: CPPFLAGS += `pkg-config --cflags SDL_ttf SDL_image`
 generate: LDLIBS += `pkg-config --libs SDL_ttf SDL_image`

@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 void free_layer(struct layer *layer) {
     if (layer->weights) {
@@ -54,32 +55,38 @@ struct layer *create_layer(const int prev_layer_size, const int neuron_count,
 
 void process_last_input(struct layer *layer, double *input) {
     // This time, use the softmax function
-    double *input_sum = calloc(layer->neuron_count, sizeof(double));
+    double w_sum = 0.0;
     for (int i = 0; i < layer->neuron_count; i++) {
+        layer->hidden_values[i] = 0.0;
         for (int y = 0; y < layer->prev_layer_size; y++) {
-            input_sum[i] += input[y] * layer->weights[i][y] +
-                            layer->bias * layer->bias_weights[i];
+            layer->hidden_values[i] += input[y] * layer->weights[i][y] +
+                                       layer->bias * layer->bias_weights[i];
         }
+        w_sum += exp(layer->hidden_values[i]);
     }
-    double *activations = malloc(sizeof(double) * layer->neuron_count);
-    softmax(input_sum, activations, layer->neuron_count);
-    free(layer->values);
-    free(layer->hidden_values);
-    layer->values = activations;
-    layer->hidden_values = input_sum;
+    softmax2(layer->hidden_values, w_sum, layer->values, layer->neuron_count);
+    /* double *input_sum = calloc(layer->neuron_count, sizeof(double)); */
+    /* for (int i = 0; i < layer->neuron_count; i++) { */
+    /*     for (int y = 0; y < layer->prev_layer_size; y++) { */
+    /*         input_sum[i] += input[y] * layer->weights[i][y] + */
+    /*                         layer->bias * layer->bias_weights[i]; */
+    /*     } */
+    /* } */
+    /* double *activations = malloc(sizeof(double) * layer->neuron_count); */
+    /* softmax(input_sum, activations, layer->neuron_count); */
+    /* free(layer->values); */
+    /* free(layer->hidden_values); */
+    /* layer->values = activations; */
+    /* layer->hidden_values = input_sum; */
 }
 
 void process_input(struct layer *layer, double *input) {
-    double *input_sum = calloc(layer->neuron_count, sizeof(double));
     for (int i = 0; i < layer->neuron_count; i++) {
+        layer->hidden_values[i] = 0.0;
         for (int y = 0; y < layer->prev_layer_size; y++) {
-            input_sum[i] += input[y] * layer->weights[i][y] +
-                            layer->bias * layer->bias_weights[i];
+            layer->hidden_values[i] += input[y] * layer->weights[i][y] +
+                                       layer->bias * layer->bias_weights[i];
         }
+        layer->values[i] = sigmoid(layer->hidden_values[i]);
     }
-    double *sigmoid_sum = map(sigmoid, input_sum, layer->neuron_count);
-    free(layer->values);
-    free(layer->hidden_values);
-    layer->values = sigmoid_sum;
-    layer->hidden_values = input_sum;
 }
