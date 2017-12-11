@@ -84,6 +84,14 @@ int bcount(struct rxy_bintree *b) {
     return 1 + bcount(b->left) + bcount(b->right);
 }
 
+void free_bintree(struct rxy_bintree *b){
+    if(!b)
+        return;
+    free_bintree(b->left);
+    free_bintree(b->right);
+    free(b);
+}
+
 void free_complete_bintree(struct rxy_bintree *b){
     if(!b)
         return;
