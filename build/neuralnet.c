@@ -11,15 +11,17 @@
 #include <time.h>
 
 #define H 35
-#define V 45
+#define V 35
 #define SIZE H*V
 
-static const char TOKENS[] = "!\"#$%&'()*+,-.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-static const int TOKENS_LEN = 76;
+
+static const char TOKENS[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW"
+    "XYZ0123456789";
+static const int TOKENS_LEN = 62;
 static const int SYMBOL_OFFSET = 0;
-static const int LETTER_OFFSET = 0 + 14;
-static const int CAPS_OFFSET = 0 + 14 + 26;
-static const int NUMBER_OFFSET = 0 + 14 + 26 + 26;
+static const int LETTER_OFFSET = 0;
+static const int CAPS_OFFSET = 26 + 0;
+static const int NUMBER_OFFSET = 26 + 26 + 0;
 
 void mat_to_double(t_bool_matrix *mat, double *output) {
     for (int i = 0; i < mat->cols * mat->lines; i++)
@@ -28,7 +30,7 @@ void mat_to_double(t_bool_matrix *mat, double *output) {
 
 int get_letter_index(char letter) {
     if(letter <= '.')
-        return letter - 33 + SYMBOL_OFFSET;
+        return letter - 44 + SYMBOL_OFFSET;
     else if (letter <= '9')
         return letter - 48 + NUMBER_OFFSET;
     else if (letter <= 'Z')
@@ -196,7 +198,7 @@ int main(int argc, char *argv[]) {
     struct neural_net *nn;
     printf("%d\n", argc);
     if (argc == 3) {
-        nn = create_nn(SIZE, 1, 100, TOKENS_LEN);
+        nn = create_nn(SIZE, 1, 150, TOKENS_LEN);
     } else {
         printf("Loading\n");
         nn = load_nn(argv[3]);

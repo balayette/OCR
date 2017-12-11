@@ -1,4 +1,4 @@
-#define _GNU_SOURCE
+#define D_BSD_SOURCE
 #include "imgprocessing/pixop.h"
 #include <time.h>
 #include <math.h>
@@ -15,11 +15,11 @@
 #include <string.h>
 
 static const char TOKENS[] =
-    "!\"#$%&'()*+,-.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-static const int TOKENS_LEN = 76;
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+static const int TOKENS_LEN = 62;
 
 #define H 35
-#define V 45
+#define V 35
 #define SIZE H*V
 
 void noisify(t_bool_matrix *mat){
@@ -99,13 +99,13 @@ void do_letter(TTF_Font *font, char *path, int index, int nindex, char l){
         save_bool_matrix(path, trimed);
         /* printf("Before noisify\n"); */
         /* pprint_bool_matrix(trimed); */
-        for(int i = 0; i < 9; i++){
-            noisify(trimed);
-            /* printf("Noisified\n"); */
-            path[nindex] = '0' + i;
-            /* pprint_bool_matrix(trimed); */
-            save_bool_matrix(path, trimed);
-        }
+        /* for(int i = 0; i < 5; i++){ */
+        /*     noisify(trimed); */
+        /*     /\* printf("Noisified\n"); *\/ */
+        /*     path[nindex] = '0' + i; */
+        /*     /\* pprint_bool_matrix(trimed); *\/ */
+        /*     save_bool_matrix(path, trimed); */
+        /* } */
         M_bool_FREE(scaled);
     }
     SDL_FreeSurface(surf);
@@ -113,7 +113,7 @@ void do_letter(TTF_Font *font, char *path, int index, int nindex, char l){
 
 void generate(char *font, char *path, int sizeindex, int letterindex){
     int c = 0;
-    for(int i = 150; i > 50; i -= 10, c++){
+    for(int i = 150; i > 50; i -= 30, c++){
         TTF_Font *f = TTF_OpenFont(font, i);
         path[sizeindex] = c + 'a';
         for(int i = 0; i < TOKENS_LEN; i++){

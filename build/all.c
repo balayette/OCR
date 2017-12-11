@@ -10,17 +10,16 @@
 #include "misc/bool_matrix.h"
 
 #define H 35
-#define V 45
+#define V 35
 #define SIZE H *V
 
-static const char TOKENS[] = "!\"#$%&'()*+,-."
-                             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW"
+static const char TOKENS[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW"
                              "XYZ0123456789";
-static const int TOKENS_LEN = 73;
+static const int TOKENS_LEN = 62;
 static const int SYMBOL_OFFSET = 0;
-static const int LETTER_OFFSET = 14;
-static const int CAPS_OFFSET = 26 + 14;
-static const int NUMBER_OFFSET = 26 + 26 + 14;
+static const int LETTER_OFFSET = 0;
+static const int CAPS_OFFSET = 26 + 0;
+static const int NUMBER_OFFSET = 26 + 26 + 0;
 
 struct neural_net *nn;
 
@@ -32,7 +31,7 @@ void mat_to_double(t_bool_matrix *mat, double *output) {
 
 int get_letter_index(char letter) {
     if (letter <= '.')
-        return letter - 33 + SYMBOL_OFFSET;
+        return letter - 44 + SYMBOL_OFFSET;
     if (letter <= '9')
         return letter - 48 + NUMBER_OFFSET;
     else if (letter <= 'Z')
@@ -124,16 +123,12 @@ int main(int argc, char *argv[]) {
     }
 
     nn = load_nn(argv[1]);
-    SDL_Surface *screen = NULL;
     SDL_Surface *img = load_image(argv[2]);
-    display_and_wait(&screen, img);
 
     gray_level(img);
-    display_and_wait(&screen, img);
 
     int t = otsu(img);
     binarize(img, t);
-    display_and_wait(&screen, img);
 
     t_bool_matrix *mat = surface_to_matrix(img);
 
@@ -148,19 +143,16 @@ int main(int argc, char *argv[]) {
     int space = img->w / (letter_count / line_count);
     space /= 3;
     printf("%d space\n", space);
-    draw_boxes_leaves(img, bintree, 255, 0, 0);
 
     FILE *f = fopen("output.txt", "w");
 
     DISPLAY(bintree, space, f);
     fclose(f);
-    display_and_wait(&screen, img);
 
     free_nn(nn);
     M_bool_FREE(mat);
     free_bintree(bintree);
     SDL_FreeSurface(img);
-    SDL_FreeSurface(screen);
     SDL_Quit();
 
     return 0;
