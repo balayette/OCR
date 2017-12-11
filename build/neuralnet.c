@@ -26,44 +26,6 @@ void mat_to_double(t_bool_matrix *mat, double *output) {
         output[i] = mat->values[i] ? 0.0 : 1.0;
 }
 
-/* void mat_to_double(t_bool_matrix *mat, double *output, int width, int height)
- * { */
-/*     int h_padding = width - mat->cols; */
-/*     int left_padding = h_padding / 2; */
-/*     int right_padding = h_padding - left_padding; */
-
-/*     int v_padding = height - mat->lines; */
-/*     int top_padding = v_padding / 2; */
-/*     int bottom_padding = v_padding - top_padding; */
-
-/*     assert(mat->lines + top_padding + bottom_padding == height); */
-/*     assert(mat->cols + left_padding + right_padding == width); */
-
-/*     int index = 0; */
-/*     for (int top = 0; top < top_padding; top++) { */
-/*         output[index] = 0.0; */
-/*         index++; */
-/*     } */
-/*     for (int line = 0; line < mat->lines; line++) { */
-/*         for (int left = 0; left < left_padding; left++) { */
-/*             output[index] = 0.0; */
-/*             index++; */
-/*         } */
-/*         for (int col = 0; col < mat->cols; col++) { */
-/*             output[index] = M_bool_GET(mat, col, line) ? 1.0 : 0.0; */
-/*             index++; */
-/*         } */
-/*         for (int right = 0; right < right_padding; right++) { */
-/*             output[index] = 0.0; */
-/*             index++; */
-/*         } */
-/*     } */
-/*     for (int bot = 0; bot < bottom_padding; bot++) { */
-/*         output[index] = 0.0; */
-/*         index++; */
-/*     } */
-/* } */
-
 int get_letter_index(char letter) {
     if(letter <= '.')
         return letter - 33 + SYMBOL_OFFSET;
@@ -210,23 +172,6 @@ void free_dataset(struct dataset *ds) {
     free(ds);
 }
 
-/* void load_dataset(char *path, int index, t_bool_matrix **arr){ */
-/*     for(int i = 0; i < TOKENS_LEN; i++){ */
-/*         path[index] = TOKENS[i]; */
-/*         t_bool_matrix *m = load_bool_matrix(path); */
-/*         if(!m) */
-/*             continue; */
-/*         arr[i] = m; */
-/*     } */
-/* } */
-
-/* void free_dataset(t_bool_matrix **arr) { */
-/*     for (int i = 0; i < TOKENS_LEN; i++) */
-/*         if (arr[i]) */
-/*             M_bool_FREE(arr[i]); */
-/*     free(arr); */
-/* } */
-
 void print_diff(double *arr1, double *arr2, int size) {
     for (int i = 0; i < size; i++) {
         printf("%f - %f\n", arr1[i], arr2[i]);
@@ -240,13 +185,6 @@ void generate_cache(t_bool_matrix **dataset, double **cache) {
         }
     }
 }
-
-/* void free_cache(double **cache) { */
-/*     for (int i = 0; i < TOKENS_LEN; i++) */
-/*         if (cache[i]) */
-/*             free(cache[i]); */
-/*     free(cache); */
-/* } */
 
 int main(int argc, char *argv[]) {
     srand(time(NULL));
@@ -311,48 +249,3 @@ int main(int argc, char *argv[]) {
     free(path);
     return 0;
 }
-/* int main(int argc, char *argv[]) { */
-/*     srand(time(NULL)); */
-/*     if (argc < 2) { */
-/*         printf("Count missing\n"); */
-/*         return 1; */
-/*     } */
-/*     int reps = atoi(argv[1]); */
-/*     struct neural_net *nn = create_nn(SIZE, 1, 15, TOKENS_LEN); */
-/*     char *path = calloc(15, sizeof(char)); */
-/*     path = strcat(path, "res/data/#.bin"); */
-/*     double *output = malloc(TOKENS_LEN * sizeof(double)); */
-/*     t_bool_matrix **dataset = calloc(TOKENS_LEN, sizeof(t_bool_matrix *)); */
-/*     double **cache = calloc(TOKENS_LEN, sizeof(double *)); */
-/*     for (int i = 0; i < TOKENS_LEN; i++) */
-/*         cache[i] = calloc(SIZE, sizeof(double)); */
-
-/*     load_dataset(path, 9, dataset); */
-
-/*     generate_cache(dataset, cache); */
-
-/*     /\* printf("Dataset length : %d\n", TOKENS_LEN); *\/ */
-
-/*     for(int BIGREP = 1; BIGREP <= 1000; BIGREP++){ */
-/*         printf("%d / %d\n", BIGREP * (reps / 1000), reps); */
-/*         for(int rep = 1; rep <= reps / 1000; rep++){ */
-/*             for(int i = 0; i < TOKENS_LEN; i++){ */
-/*                 int k = rand() % TOKENS_LEN; */
-/*                 if(!cache[k]) */
-/*                     continue; */
-/*                 forward_prop(nn, cache[k]); */
-/*                 get_output(output, TOKENS[k], TOKENS_LEN); */
-/*                 back_prop(nn, output, cache[k]); */
-/*             } */
-/*         } */
-/*     } */
-
-/*     for(int i = 0; i < TOKENS_LEN; i++){ */
-/*         if(!cache[i]) */
-/*             continue; */
-/*         forward_prop(nn, cache[i]); */
-/*         printf("Expected %c | Got %c\n", TOKENS[i],
- * get_letter(nn->layers[nn->hidden_layer_count + 1]->values, TOKENS_LEN)); */
-/*     } */
-/*     return 0; */
-/* } */
