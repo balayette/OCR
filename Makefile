@@ -57,7 +57,7 @@ clean:
 	rm -f ./build/*.o
 	rm -f ./build/neuralnet
 	rm -f ./build/imgprocessing
-	rm -f nn.save
+	rm -f ./build/all
 	rm -f $(NNOBJ)
 	rm -f $(IMGOBJ)
 	rm -f $(MISCOBJ)
