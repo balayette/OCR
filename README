@@ -11,9 +11,7 @@ Utilization:
        OUTPUT_PATH is the path to the output directory
 
     Build the other components :
-       $ make all
-       or
-       $ make opti
+       $ make
 
        $ ./build/neuralnet DATA_PATH REPS (SAVE)
        DATA_PATH is the path to the training data
