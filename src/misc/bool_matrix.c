@@ -39,3 +39,19 @@ t_bool_matrix *load_bool_matrix(char *path){
     fclose(f);
     return mat;
 }
+
+void pprint_bool_matrix(t_bool_matrix *mat){
+    if(!mat)
+        return;
+    for(int y = 0; y < mat->lines; y++){
+        printf("|");
+        for(int x = 0; x < mat->cols; x++){
+            if(!M_bool_GET(mat, x, y))
+                printf("#");
+            else
+                printf(" ");
+
+        }
+        printf("|\n");
+    }
+}

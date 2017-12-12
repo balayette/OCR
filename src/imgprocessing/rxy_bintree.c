@@ -1,16 +1,17 @@
 #include "imgprocessing/rxy_bintree.h"
-#include "misc/bool_matrix.h"
-#include "imgprocessing/processing.h"
 #include "imgprocessing/display.h"
+#include "imgprocessing/processing.h"
+#include "matrix/matrixop.h"
+#include "misc/bool_matrix.h"
 
-void apply_on_leaves2(struct rxy_bintree *b, t_bool_matrix *(*f)(t_bool_matrix *)){
-    if(!b){
+void apply_on_leaves2(struct rxy_bintree *b,
+                      t_bool_matrix *(*f)(t_bool_matrix *)) {
+    if (!b) {
         return;
     }
-    if(!b->left && !b->right){
+    if (!b->left && !b->right) {
         b->values = f(b->values);
-    }
-    else{
+    } else {
         apply_on_leaves2(b->left, f);
         apply_on_leaves2(b->right, f);
     }
@@ -21,8 +22,7 @@ void apply_on_leaves(struct rxy_bintree *b, void (*f)(struct rxy_bintree *)) {
     }
     if (!b->left && !b->right) {
         f(b);
-    }
-    else{
+    } else {
         apply_on_leaves(b->left, f);
         apply_on_leaves(b->right, f);
     }
@@ -33,6 +33,7 @@ struct rxy_bintree *create_rxy_bintree(t_bool_matrix *value, int x, int y) {
     ret->x = x;
     ret->y = y;
     ret->values = value;
+    ret->line_end = false;
     ret->left = NULL;
     ret->right = NULL;
     return ret;
@@ -46,8 +47,8 @@ int bcount_leaves(struct rxy_bintree *b) {
     return 1;
 }
 
-void df_display(SDL_Surface **screen, Uint32 flags,
-                         SDL_PixelFormat *fmt, struct rxy_bintree *b) {
+void df_display(SDL_Surface **screen, Uint32 flags, SDL_PixelFormat *fmt,
+                struct rxy_bintree *b) {
     if (!b)
         return;
     SDL_Surface *s = SDL_CreateRGBSurface(
@@ -59,8 +60,8 @@ void df_display(SDL_Surface **screen, Uint32 flags,
     df_display(screen, flags, fmt, b->right);
 }
 
-void df_display_leaves(SDL_Surface **screen, Uint32 flags,
-                                SDL_PixelFormat *fmt, struct rxy_bintree *b) {
+void df_display_leaves(SDL_Surface **screen, Uint32 flags, SDL_PixelFormat *fmt,
+                       struct rxy_bintree *b) {
     if (!b)
         return;
     if (b->left || b->right) {
@@ -81,4 +82,22 @@ int bcount(struct rxy_bintree *b) {
     if (!b)
         return 0;
     return 1 + bcount(b->left) + bcount(b->right);
+}
+
+void free_bintree(struct rxy_bintree *b){
+    if(!b)
+        return;
+    free_bintree(b->left);
+    free_bintree(b->right);
+    free(b);
+}
+
+void free_complete_bintree(struct rxy_bintree *b){
+    if(!b)
+        return;
+    M_bool_FREE(b->values);
+    free_complete_bintree(b->left);
+    free_complete_bintree(b->right);
+    free(b);
+
 }

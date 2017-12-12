@@ -1,6 +1,10 @@
+#define D_BSD_SOURCE
 #include "imgprocessing/pixop.h"
+#include <time.h>
+#include <math.h>
 #include <dirent.h>
 #include "misc/bool_matrix.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <SDL/SDL.h>
@@ -10,45 +14,117 @@
 #include "matrix/matrixop.h"
 #include <string.h>
 
-static const char TOKENS[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+static const char TOKENS[] =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 static const int TOKENS_LEN = 62;
+
+#define H 35
+#define V 35
+#define SIZE H*V
+
+void noisify(t_bool_matrix *mat){
+    for(int i = 0; i < mat->cols * mat->lines; i++){
+        if((float)rand() / (float)RAND_MAX > 0.98f){
+            mat->values[i] = !mat->values[i];
+        }
+    }
+}
 
 SDL_Surface *new_surface(int h, int w) {
     return SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
 }
 
-void do_letter(SDL_Surface *surf, TTF_Font *font, char *path, int index, char l){
-    SDL_Color black = {0, 0, 0, 0};
-    SDL_Color white = {255, 255, 255, 0};
+int count_m(t_bool_matrix *m){
+    int count = 0;
+    for(int y = 0; y < m->lines; y++){
+        for(int x = 0; x < m->cols; x++){
+            if(M_bool_GET(m, x, y))
+                count++;
+        }
+    }
+    return count;
+}
+
+int count_s(SDL_Surface *s){
+    Uint8 r, g, b;
+    int count = 0;
+    for(int y = 0; y < s->h; y++){
+        for(int x = 0; x < s->w; x++){
+            Uint32 p = getpixel(s, x, y);
+            SDL_GetRGB(p, s->format, &r, &g, &b);
+            if(r == 0 && g == 0 && b == 0)
+                count++;
+        }
+    }
+    return count;
+}
+
+void do_letter(TTF_Font *font, char *path, int index, int nindex, char l){
+    SDL_Surface *surf = NULL;
+    SDL_Color black = {0, 0, 0, 255};
     char str[2] = {' ', '\0'};
     str[0] = l;
-    surf = TTF_RenderText_Shaded(font, str, black, white);
+    surf = TTF_RenderText_Solid(font, str, black);
+    if(!surf)
+        return;
     t_bool_matrix *mat = surface_to_matrix(surf);
-    t_bool_matrix *triml = trim_lines(mat);
-    if(!triml)
-        return;
-    t_bool_matrix *trimc = trim_cols(triml);
-    if(!trimc)
-        return;
-    M_bool_FREE(mat);
-    M_bool_FREE(triml);
-    path[index] = l;
-    printf("         %s\n", path);
-    save_bool_matrix(path, trimc);
-    M_bool_FREE(trimc);
+
+    /* SDL_Surface *screen = NULL; */
+    SDL_Surface *s = new_surface(mat->lines, mat->cols);
+    matrix_to_surface(s, mat);
+    /* printf("Mat count : %d\n", count_m(mat)); */
+    /* printf("Surf count : %d\n", count_s(surf)); */
+    /* display_and_wait(&screen, surf); */
+    /* display_and_wait(&screen, s); */
+
+    /* pprint_bool_matrix(mat); */
+    t_bool_matrix *trimed = mat;
+    if(l > '.')
+        trimed = trim_all(mat);
+    /* printf("\n"); */
+    /* pprint_bool_matrix(trimed); */
+
+    if(trimed){
+        path[index] = l;
+        /* printf("         %s\n", path); */
+        t_bool_matrix *scaled = NULL;
+        if(trimed->lines != H || trimed->cols != V){
+            /* printf("Scaling\n"); */
+            scaled = scale(trimed, H, V);
+            if(trimed != mat)
+                M_bool_FREE(trimed);
+            trimed = scaled;
+        }
+        path[nindex] = '0';
+        save_bool_matrix(path, trimed);
+        /* printf("Before noisify\n"); */
+        /* pprint_bool_matrix(trimed); */
+        for(int i = 0; i < 5; i++){
+            noisify(trimed);
+            /* printf("Noisified\n"); */
+            path[nindex] = '0' + i;
+            /* pprint_bool_matrix(trimed); */
+            save_bool_matrix(path, trimed);
+        }
+        M_bool_FREE(scaled);
+    }
     SDL_FreeSurface(surf);
 }
 
-void generate(char *font, char *path, int index){
-    SDL_Surface *letter = NULL;
-    TTF_Font *f = TTF_OpenFont(font, 30);
-    for(int i = 0; i < TOKENS_LEN; i++){
-        do_letter(letter, f, path, index, TOKENS[i]);
+void generate(char *font, char *path, int sizeindex, int letterindex){
+    int c = 0;
+    for(int i = 150; i > 50; i -= 30, c++){
+        TTF_Font *f = TTF_OpenFont(font, i);
+        path[sizeindex] = c + 'a';
+        for(int i = 0; i < TOKENS_LEN; i++){
+            do_letter(f, path, letterindex, sizeindex + 1, TOKENS[i]);
+        }
+        TTF_CloseFont(f);
     }
-    TTF_CloseFont(f);
 }
 
 int main(int argc, char *argv[]){
+    srand(time(NULL));
     if(argc < 3){
         printf("./generate FONTS_PATH OUTPUT_PATH\n");
         exit(1);
@@ -88,30 +164,17 @@ int main(int argc, char *argv[]){
             strcpy(indiv_font_path + lenfonts, dir->d_name);
 
             strcpy(indiv_output_path + lenoutput, dir->d_name);
-            strcpy(indiv_output_path + lenoutput + strlen(dir->d_name) - 4, ".*");
-            int index = strlen(indiv_output_path) - 1;
+            strcpy(indiv_output_path + lenoutput + strlen(dir->d_name) - 4, ".size.*");
+            int sizeindex = strlen(indiv_output_path) - 6;
+            int letterindex = strlen(indiv_output_path) - 1;
 
             printf("Found font %s\n", indiv_font_path);
             printf("    Outputing to %s\n", indiv_output_path);
-            generate(indiv_font_path, indiv_output_path, index);
+            generate(indiv_font_path, indiv_output_path, sizeindex, letterindex);
         }
     }
 
-    /* DIR *d; */
-    /* struct dirent *dir; */
-    /* d = opendir("res/fonts"); */
-    /* if(!d) */
-    /* { */
-    /*     printf("Couldn't open the fonts\n"); */
-    /*     exit(1); */
-    /* } */
-    /* while((dir = readdir(d)) != NULL) */
-    /*     if(dir->d_type == DT_REG){ */
-    /*         printf("%s\n", dir->d_name); */
-    /*         generate(dir->d_name, output_path, 9); */
-    /*     } */
-
-    /* closedir(d); */
+    closedir(d);
 
     TTF_Quit();
     SDL_Quit();

@@ -1,12 +1,28 @@
-
 |                                   README                                    |
-
-Project: OCR, coded in C. Two main parts: Image processing, Neural Network.
 
 Made For The S3 Project in EPITA. October 2017
 This software car recognize text in images.
 
 Utilization:
-		Compile the project : make
-		Launch the process : ./image_processing.out [img path]
-		Generating a new nn.save : ./neuralnet.out [nbr of iterations]
+    If needs be, create training data :
+       $ make generate
+       $ ./generate FONTS_PATH OUTPUT_PATH
+       FONTS_PATH is the path to a directory that contains .ttf fonts ONLY.
+       OUTPUT_PATH is the path to the output directory
+
+    Build the other components :
+       $ make
+
+       $ ./build/neuralnet DATA_PATH REPS (SAVE)
+       DATA_PATH is the path to the training data
+       REPS is the number of propagations to compute
+       SAVE is optional, if specified the neural net will load the save instead
+       of starting from scratch
+       The trained neural net is saved to save.nn
+
+       $ ./build/all SAVE IMAGE
+       SAVE is the path to a neural net save file
+       IMAGE is the path to the input image
+       The output of the OCR is stored in output.txt
+
+       $ make clean

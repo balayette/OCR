@@ -10,4 +10,5 @@ doc/documentation.pdf
 build/neuralnet
 build/generate
 build/imgprocessing
+build/all
 res/data

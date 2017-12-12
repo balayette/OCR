@@ -13,4 +13,5 @@ void save_bool_matrix(char *path, t_bool_matrix *mat);
 
 t_bool_matrix *load_bool_matrix(char *path);
 
+void pprint_bool_matrix(t_bool_matrix *mat);
 #endif

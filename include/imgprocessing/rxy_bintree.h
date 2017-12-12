@@ -7,6 +7,7 @@
 
 #include "misc/bool_matrix.h"
 #include <SDL/SDL.h>
+#include <stdbool.h>
 
 /**
  * \brief Structure of the rxy_bintree
@@ -14,6 +15,7 @@
 struct rxy_bintree {
     int x;
     int y;
+    bool line_end;
     t_bool_matrix *values;
     struct rxy_bintree *left;
     struct rxy_bintree *right;
@@ -47,4 +49,6 @@ void apply_on_leaves(struct rxy_bintree *b, void (*f)(struct rxy_bintree *));
 void apply_on_leaves2(struct rxy_bintree *b,
                       t_bool_matrix *(*f)(t_bool_matrix *));
 
+void free_bintree(struct rxy_bintree *b);
+void free_complete_bintree(struct rxy_bintree *b);
 #endif

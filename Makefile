@@ -41,7 +41,7 @@ build/all: CPPFLAGS += `pkg-config --cflags sdl`
 build/all: LDLIBS += `pkg-config --libs SDL_image`
 build/all: build/all.o $(NNOBJ) $(IMGOBJ) $(MISCOBJ) $(MATRIXOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
-
+  
 build/interface: CPPFLAGS += `pkg-config --cflags gtk+-3.0`
 build/interface: LDLIBS += `pkg-config --libs gtk+-3.0`
 build/interface: build/interface.o $(NNOBJ) $(INTOBJ) $(MISCOBJ) $(MATRIXOBJ)
@@ -66,7 +66,7 @@ clean:
 	rm -f ./build/neuralnet
 	rm -f ./build/imgprocessing
   rm -f ./build/interface
-	rm -f nn.save
+	rm -f ./build/all
 	rm -f $(NNOBJ)
 	rm -f $(IMGOBJ)
 	rm -f $(MISCOBJ)
