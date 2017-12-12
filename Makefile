@@ -18,13 +18,16 @@ MISCOBJ=$(MISCSRC:.c=.o)
 GENSRC=$(wildcard src/generate/*.c)
 GENOBJ=$(GENSRC:.c=.o)
 
+INTSRC=$(wildcard src/interface/*.c)
+INTOBJ=$(INTSRC:.c=.o)
+
 opti: CFLAGS += -O3
 opti: all
 
 debug: CFLAGS += -g3
 debug: all
 
-all: build/neuralnet build/imgprocessing build/all
+all: build/neuralnet build/imgprocessing build/interface build/all
 
 build/neuralnet: build/neuralnet.o $(NNOBJ) $(MISCOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
@@ -37,6 +40,11 @@ build/imgprocessing: build/imgprocessing.o $(IMGOBJ) $(MISCOBJ) $(MATRIXOBJ)
 build/all: CPPFLAGS += `pkg-config --cflags sdl`
 build/all: LDLIBS += `pkg-config --libs SDL_image`
 build/all: build/all.o $(NNOBJ) $(IMGOBJ) $(MISCOBJ) $(MATRIXOBJ)
+	$(LINK.o) $^ -o $@ $(LDLIBS)
+  
+build/interface: CPPFLAGS += `pkg-config --cflags gtk+-3.0`
+build/interface: LDLIBS += `pkg-config --libs gtk+-3.0`
+build/interface: build/interface.o $(NNOBJ) $(INTOBJ) $(MISCOBJ) $(MATRIXOBJ)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
 
 generate: CPPFLAGS += `pkg-config --cflags SDL_ttf SDL_image`
@@ -57,10 +65,12 @@ clean:
 	rm -f ./build/*.o
 	rm -f ./build/neuralnet
 	rm -f ./build/imgprocessing
+  rm -f ./build/interface
 	rm -f ./build/all
 	rm -f $(NNOBJ)
 	rm -f $(IMGOBJ)
 	rm -f $(MISCOBJ)
 	rm -f $(GENOBJ)
 	rm -f $(MATRIXOBJ)
-	rm -f ./generate
+  rm -f $(INTOBJ)
+  rm -f ./generate
