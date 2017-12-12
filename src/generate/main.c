@@ -99,13 +99,13 @@ void do_letter(TTF_Font *font, char *path, int index, int nindex, char l){
         save_bool_matrix(path, trimed);
         /* printf("Before noisify\n"); */
         /* pprint_bool_matrix(trimed); */
-        /* for(int i = 0; i < 5; i++){ */
-        /*     noisify(trimed); */
-        /*     /\* printf("Noisified\n"); *\/ */
-        /*     path[nindex] = '0' + i; */
-        /*     /\* pprint_bool_matrix(trimed); *\/ */
-        /*     save_bool_matrix(path, trimed); */
-        /* } */
+        for(int i = 0; i < 5; i++){
+            noisify(trimed);
+            /* printf("Noisified\n"); */
+            path[nindex] = '0' + i;
+            /* pprint_bool_matrix(trimed); */
+            save_bool_matrix(path, trimed);
+        }
         M_bool_FREE(scaled);
     }
     SDL_FreeSurface(surf);

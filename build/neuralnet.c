@@ -198,7 +198,7 @@ int main(int argc, char *argv[]) {
     struct neural_net *nn;
     printf("%d\n", argc);
     if (argc == 3) {
-        nn = create_nn(SIZE, 1, 150, TOKENS_LEN);
+        nn = create_nn(SIZE, 1, 55, TOKENS_LEN);
     } else {
         printf("Loading\n");
         nn = load_nn(argv[3]);
